@@ -1,0 +1,9 @@
+.editor-wrapper {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
+
+.active-style {
+  background: blue;
+  color: #fff;
+}
