@@ -114,11 +114,11 @@ const Toolbar = ({
 
   const [showColors, setShowColors] = useState(false);
 
-  const createFontBtn = () => {
+  const createFontColorBtn = () => {
     const activeStyle = editorState.getCurrentInlineStyle();
     // set font color btn color
     const currFontColor = Array.from(activeStyle).find(
-      style => style.charAt(0) === "#"
+      style => style&&style.charAt(0) === "#"
     );
     return (
       <span
@@ -187,9 +187,9 @@ const Toolbar = ({
     // set font color btn color
     const currFontSize = Array.from(activeStyle).find(
       // the custom font size style starts with '_'
-      style => style.charAt(0) === "_"
+      style => style &&style.charAt(0) === "_"
     );
-    if (currFontSize) {
+    if (currFontSize){
       var fSize = parseInt(currFontSize.slice(12).replace("px", "")) || 12;
     }
 
@@ -227,7 +227,7 @@ const Toolbar = ({
                 ))}
               </div>
             )}
-            {createFontBtn()}
+            {createFontColorBtn()}
             {fontSizeForm ? (
               <input
                 onMouseOut={() => setFontSizeForm(false)}
