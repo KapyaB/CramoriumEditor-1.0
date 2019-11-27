@@ -13,5 +13,6 @@ This rich text editor created by Bright Kapya (brightkapya.netlify.com) is desig
 - [] PDF conversion
 - [] In-document comments
 - [] edit image and caption
+- [] use editorState.getCurrentContent().getPlainText() to save  an unstyled plain text represenation of the editor content to eneble easy text search
 
 ## Known bugs

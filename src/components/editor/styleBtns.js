@@ -19,7 +19,7 @@ const styleBtns = {
 
   advInlineBtns: [
     {
-      value: <p style={{ textDecoration: "line-through" }}>S</p>,
+      value: <p style={{ textDecoration: "line-through" }}>abc</p>,
       style: "STRIKETHROUGH"
     },
 

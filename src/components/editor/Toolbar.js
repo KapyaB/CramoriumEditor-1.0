@@ -9,7 +9,9 @@ const Toolbar = ({
   toggleBlockType,
   editorState,
   setImagePrompt,
-  imagePrompt
+  imagePrompt,
+  setLinkPrompt,
+  linkPrompt
 }) => {
   const { basicInlineBtns, advInlineBtns, basicBlockBtns } = styleBtns;
 
@@ -60,6 +62,12 @@ const Toolbar = ({
         </div>
         <div className="advanced-inline">
           {advInlineBtns.map(btn => createInlineBtn(btn.value, btn.style))}
+          <button
+            className="inline-btn"
+            onMouseDown={() => setLinkPrompt(!linkPrompt)}
+          >
+            Link
+          </button>
         </div>
       </div>
       <div className="block-styles">
@@ -80,7 +88,13 @@ const Toolbar = ({
 };
 
 Toolbar.propTypes = {
-  toggleInlineStyle: PropTypes.func.isRequired
+  toggleInlineStyle: PropTypes.func.isRequired,
+  toggleBlockType: PropTypes.func.isRequired,
+  editorState: PropTypes.object.isRequired,
+  setImagePrompt: PropTypes.func.isRequired,
+  imagePrompt: PropTypes.bool.isRequired,
+  linkPrompt: PropTypes.bool.isRequired,
+  setLinkPrompt: PropTypes.func.isRequired
 };
 
 export default Toolbar;
