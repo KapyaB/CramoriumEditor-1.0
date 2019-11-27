@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { RichUtils } from "draft-js";
+import { RichUtils, Modifier } from "draft-js";
 
 import styleBtns from "./styleBtns";
+import styleMap from "./inlineStyles";
 
 const Toolbar = ({
+  EditorState,
+  setEditorState,
   toggleInlineStyle,
   toggleBlockType,
   editorState,
@@ -56,10 +59,143 @@ const Toolbar = ({
       </button>
     );
   };
+  const colors = [
+    // bw
+    "#000",
+    "#333",
+    "#888",
+    "#bbb",
+    "#fff",
+
+    //  red
+    "#C3160C",
+    "#800000",
+    "#FE2400",
+    "#E0115F",
+    "#8F001F",
+    "#B70E09",
+
+    //  green
+    "#0B6623",
+    "#507843",
+    "#29AB87",
+    "#679267",
+    "#C7EA46",
+
+    //  blue
+    "#111E6C",
+    "#0E4D92",
+    "#008DCB",
+    "#4682B4",
+    "#D4D4D4",
+
+    //  pink
+    "#E0115E",
+    "#F71794",
+    "#FF0090",
+    "#FA67CB",
+    "#FD5AAB",
+
+    //  yellow
+    "#F8DE7F",
+    "#EFCE33",
+    "#FFC30B",
+    "#CD7722",
+    "#FFDDAF",
+
+    //  orange
+    "#FC6701",
+    "#8B4000",
+    "#F7A702",
+    "#FDBE00",
+    "#F05E23"
+  ];
+
+  const [showColors, setShowColors] = useState(false);
+
+  const createFontBtn = () => {
+    const activeStyle = editorState.getCurrentInlineStyle();
+    // set font color btn color
+    const currFontColor = Array.from(activeStyle).find(
+      style => style.charAt(0) === "#"
+    );
+    return (
+      <span
+        className="font-color-btn style-btn"
+        style={{ borderBottom: `${currFontColor || "#000"} 3px solid` }}
+        onMouseDown={() => setShowColors(!showColors)}
+      >
+        A
+      </span>
+    );
+  };
+
+  // handle color click. remove previous color
+  const onColorClick = toggledColor => {
+    const selection = editorState.getSelection();
+    // remove any previuosly active colors
+    const colorStyles = Object.keys(styleMap).filter(
+      style => style.charAt(0) === "#"
+    );
+
+    const nextContentState = colorStyles.reduce((contentState, color) => {
+      return Modifier.removeInlineStyle(contentState, selection, color);
+    }, editorState.getCurrentContent());
+
+    let nextEditorState = EditorState.push(
+      editorState,
+      nextContentState,
+      "change-inline-style"
+    );
+
+    const currentStyle = editorState.getCurrentInlineStyle();
+    const currentColor = currentStyle.find(style => style.charAt(0) === "#");
+
+    // Unset style override for current color.
+    if (selection.isCollapsed()) {
+      nextEditorState = RichUtils.toggleInlineStyle(editorState, currentColor);
+    }
+
+    // If the color is being toggled on, apply it.
+    if (!currentStyle.has(toggledColor)) {
+      nextEditorState = RichUtils.toggleInlineStyle(
+        nextEditorState,
+        toggledColor
+      );
+    }
+
+    setEditorState(nextEditorState);
+
+    setShowColors(false);
+  };
+
   return (
     <div className="editor-styles">
       <div className="inline-styles">
         <div className="basic-inline">
+          <div className="font-color">
+            {showColors && (
+              <div className="color-picker">
+                colors
+                {colors.map(clr => (
+                  <button
+                    className="color-btn"
+                    style={{
+                      background: clr,
+                      height: "1rem",
+                      width: "1rem"
+                    }}
+                    onMouseDown={() => onColorClick(clr)}
+                    onClick={toggleInlineStyle}
+                    key={clr}
+                    data-style={clr}
+                  />
+                ))}
+              </div>
+            )}
+            {createFontBtn()}
+          </div>
+
           {basicInlineBtns.map(btn => createInlineBtn(btn.value, btn.style))}
         </div>
         <div className="advanced-inline">

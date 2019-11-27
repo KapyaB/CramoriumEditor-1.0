@@ -104,9 +104,12 @@ const RichTEditor = () => {
 
   const plugins = [linkPlugin, notePlugin];
 
+  console.log(editorState.getCurrentInlineStyle().toArray());
   return (
     <div className="editor-wrapper">
       <Toolbar
+        EditorState={EditorState}
+        setEditorState={setEditorState}
         toggleInlineStyle={toggleInlineStyle}
         toggleBlockType={toggleBlockType}
         editorState={editorState}
