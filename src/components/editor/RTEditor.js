@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { EditorState, RichUtils } from "draft-js";
 import Editor from "draft-js-plugins-editor";
+import createStyles from "draft-js-custom-styles";
 
 import styleMap from "./inlineStyles";
 import Toolbar from "./Toolbar";
@@ -102,9 +103,12 @@ const RichTEditor = () => {
   // note handling
   const [notePrompt, setNotePrompt] = useState(false);
 
+  // font size
+  const customStylesToManage = ["font-size"];
+  const { styles, customStyleFn } = createStyles(customStylesToManage, "_");
+
   const plugins = [linkPlugin, notePlugin];
 
-  console.log(editorState.getCurrentInlineStyle().toArray());
   return (
     <div className="editor-wrapper">
       <Toolbar
@@ -119,6 +123,7 @@ const RichTEditor = () => {
         linkPrompt={linkPrompt}
         notePrompt={notePrompt}
         setNotePrompt={setNotePrompt}
+        styles={styles}
       />
       <Editor
         placeholder="Start..."
@@ -129,6 +134,7 @@ const RichTEditor = () => {
         keyBindingFn={keyBindingFn}
         blockRendererFn={mediaBlockRenderer}
         plugins={plugins}
+        customStyleFn={customStyleFn}
       />
       {imagePrompt && (
         <ImageEmbed

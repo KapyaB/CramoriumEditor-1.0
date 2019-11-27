@@ -5,13 +5,13 @@ This rich text editor created by Bright Kapya (brightkapya.netlify.com) is desig
 - [x] All basic rich text functionality
 - [] Image annotation
 - [] Canvas drawing/ background
-- [] Link embeds
+- [x] Link embeds
 - [] Videos
 - [] Support text search
 - [] Handwriting recognition and conversion
 - [] Document scan
 - [] PDF conversion
-- [] In-document comments
+- [x] In-document comments/notes
 - [] edit image and caption
 - [] use editorState.getCurrentContent().getPlainText() to save  an unstyled plain text represenation of the editor content to eneble easy text search
 

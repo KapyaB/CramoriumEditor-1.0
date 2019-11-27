@@ -16,7 +16,8 @@ const Toolbar = ({
   setLinkPrompt,
   linkPrompt,
   notePrompt,
-  setNotePrompt
+  setNotePrompt,
+  styles
 }) => {
   const { basicInlineBtns, advInlineBtns, basicBlockBtns } = styleBtns;
 
@@ -169,6 +170,39 @@ const Toolbar = ({
     setShowColors(false);
   };
 
+  // font size
+  const [fontSize, setFontSize] = useState(12);
+  const [fontSizeForm, setFontSizeForm] = useState(false);
+
+  const handleFontSizeChange = e => {
+    const newSize = e.target.value;
+    setFontSize(newSize);
+    const newEditorState = styles.fontSize.toggle(editorState, `${newSize}px`);
+    setEditorState(newEditorState);
+  };
+
+  // create the font size input
+  const createFontSizeBtn = () => {
+    const activeStyle = editorState.getCurrentInlineStyle();
+    // set font color btn color
+    const currFontSize = Array.from(activeStyle).find(
+      // the custom font size style starts with '_'
+      style => style.charAt(0) === "_"
+    );
+    if (currFontSize) {
+      var fSize = parseInt(currFontSize.slice(12).replace("px", "")) || 12;
+    }
+
+    return (
+      <span
+        className="font-size"
+        onClick={() => setFontSizeForm(!fontSizeForm)}
+      >
+        {fSize || 12}
+      </span>
+    );
+  };
+
   return (
     <div className="editor-styles">
       <div className="inline-styles">
@@ -194,6 +228,21 @@ const Toolbar = ({
               </div>
             )}
             {createFontBtn()}
+            {fontSizeForm ? (
+              <input
+                onMouseOut={() => setFontSizeForm(false)}
+                type="number"
+                min="1"
+                step="1"
+                placeholder="font size"
+                className="font-size-input"
+                onChange={e => handleFontSizeChange(e)}
+                name="fontSize"
+                value={fontSize}
+              />
+            ) : (
+              createFontSizeBtn()
+            )}
           </div>
 
           {basicInlineBtns.map(btn => createInlineBtn(btn.value, btn.style))}
@@ -240,7 +289,8 @@ Toolbar.propTypes = {
   linkPrompt: PropTypes.bool.isRequired,
   setLinkPrompt: PropTypes.func.isRequired,
   notePrompt: PropTypes.bool.isRequired,
-  setNotePrompt: PropTypes.func.isRequired
+  setNotePrompt: PropTypes.func.isRequired,
+  styles: PropTypes.object.isRequired
 };
 
 export default Toolbar;
