@@ -11,7 +11,9 @@ const Toolbar = ({
   setImagePrompt,
   imagePrompt,
   setLinkPrompt,
-  linkPrompt
+  linkPrompt,
+  notePrompt,
+  setNotePrompt
 }) => {
   const { basicInlineBtns, advInlineBtns, basicBlockBtns } = styleBtns;
 
@@ -28,7 +30,7 @@ const Toolbar = ({
         key={style}
         data-style={style}
         onMouseDown={toggleInlineStyle}
-        className={`inline-btn ${className}`}
+        className={`style-btn ${className}`}
       >
         {value}
       </button>
@@ -48,7 +50,7 @@ const Toolbar = ({
         key={block}
         data-block={block}
         onMouseDown={toggleBlockType}
-        className={`block-btn ${className}`}
+        className={`style-btn ${className}`}
       >
         {value}
       </button>
@@ -62,24 +64,30 @@ const Toolbar = ({
         </div>
         <div className="advanced-inline">
           {advInlineBtns.map(btn => createInlineBtn(btn.value, btn.style))}
-          <button
-            className="inline-btn"
-            onMouseDown={() => setLinkPrompt(!linkPrompt)}
-          >
-            Link
-          </button>
         </div>
       </div>
       <div className="block-styles">
         <div className="basic-blocks">
           {basicBlockBtns.map(btn => createBlockBtn(btn.value, btn.block))}
         </div>
-        <div className="advanced-blocks">
+        <div className="advanced-btns">
           <button
-            className="block-btn"
+            className="style-btn"
             onMouseDown={() => setImagePrompt(!imagePrompt)}
           >
             Image
+          </button>
+          <button
+            className="style-btn"
+            onMouseDown={() => setLinkPrompt(!linkPrompt)}
+          >
+            Link
+          </button>
+          <button
+            className="style-btn"
+            onMouseDown={() => setNotePrompt(!notePrompt)}
+          >
+            Note
           </button>
         </div>
       </div>
@@ -94,7 +102,9 @@ Toolbar.propTypes = {
   setImagePrompt: PropTypes.func.isRequired,
   imagePrompt: PropTypes.bool.isRequired,
   linkPrompt: PropTypes.bool.isRequired,
-  setLinkPrompt: PropTypes.func.isRequired
+  setLinkPrompt: PropTypes.func.isRequired,
+  notePrompt: PropTypes.bool.isRequired,
+  setNotePrompt: PropTypes.func.isRequired
 };
 
 export default Toolbar;

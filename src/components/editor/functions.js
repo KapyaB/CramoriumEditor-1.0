@@ -35,6 +35,16 @@ export default {
       return "add-link";
     }
 
+    // ctrl+shift+n- add note
+    if (
+      KeyBindingUtil.hasCommandModifier(e) &&
+      e.shiftKey &&
+      e.keyCode === 78 /* 
+    n*/
+    ) {
+      return "add-note";
+    }
+
     // to make sure we don’t break all the built-in key commands, if we don’t detect strikethrough, we want to make sure Draft.js still parses it and detects default commands.
     return getDefaultKeyBinding(e);
   }

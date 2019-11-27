@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 // rendering custom blocks relies on the blockRendererFn prop of Editor
 export const mediaBlockRenderer = block => {
@@ -16,12 +16,6 @@ export const mediaBlockRenderer = block => {
 // the Image entity
 const Image = props => {
   const { src, caption } = props;
-  // handle caption change
-  const [captionState, setCaption] = useState(caption);
-
-  const handleChange = e => {
-    setCaption(e.target.value);
-  };
   return src ? (
     <div className="embedded-image">
       <img src={src} alt={caption} className="image" />

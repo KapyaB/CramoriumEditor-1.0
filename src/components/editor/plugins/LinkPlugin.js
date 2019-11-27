@@ -31,10 +31,8 @@ export const Link = props => {
   );
 };
 
-// create a keyBindingFn that returns 'add-link' if characters are selected and the key combination matches ctr/cmd+k
 const linkPlugin = {
   // Define decorators, an array of objects defining relevant strategy and component with linkStrategy and Link, respectively.
-
   decorators: [
     {
       strategy: linkStrategy,

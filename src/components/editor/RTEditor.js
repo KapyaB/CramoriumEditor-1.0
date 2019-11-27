@@ -8,8 +8,10 @@ import "draft-js/dist/Draft.css";
 import { mediaBlockRenderer } from "./entities/MediaBlock";
 import linkPlugin from "./plugins/LinkPlugin";
 import functions from "./functions";
-import ImageEmbed from "./ImageEmbed";
-import LinkEmbed from "./LinkEmbed";
+import ImageEmbed from "./embeds/ImageEmbed";
+import LinkEmbed from "./embeds/LinkEmbed";
+import NoteEmbed from "./embeds/NoteEmbed";
+import notePlugin from "./plugins/NotePlugin";
 
 // plugins
 
@@ -75,6 +77,11 @@ const RichTEditor = () => {
       setLinkPrompt(!linkPrompt);
     }
 
+    // note
+    if (!newEditorState && command === "add-note") {
+      setNotePrompt(!notePrompt);
+    }
+
     if (newEditorState) {
       setEditorState(newEditorState);
       return "handled";
@@ -92,7 +99,10 @@ const RichTEditor = () => {
   // link handling
   const [linkPrompt, setLinkPrompt] = useState(false);
 
-  const plugins = [linkPlugin];
+  // note handling
+  const [notePrompt, setNotePrompt] = useState(false);
+
+  const plugins = [linkPlugin, notePlugin];
 
   return (
     <div className="editor-wrapper">
@@ -104,6 +114,8 @@ const RichTEditor = () => {
         imagePrompt={imagePrompt}
         setLinkPrompt={setLinkPrompt}
         linkPrompt={linkPrompt}
+        notePrompt={notePrompt}
+        setNotePrompt={setNotePrompt}
       />
       <Editor
         placeholder="Start..."
@@ -130,6 +142,16 @@ const RichTEditor = () => {
           setEditorState={setEditorState}
           linkPrompt={linkPrompt}
           setLinkPrompt={setLinkPrompt}
+        />
+      )}
+
+      {notePrompt && (
+        <NoteEmbed
+          editorState={editorState}
+          EditorState={EditorState}
+          setEditorState={setEditorState}
+          notePrompt={notePrompt}
+          setNotePrompt={setNotePrompt}
         />
       )}
     </div>
