@@ -2,7 +2,7 @@
 This rich text editor created by Bright Kapya (brightkapya.netlify.com) is designed to be minimalistic, unique, and feature rich. It is aimed at being an optimised version of an earlier release (https://github.com/KapyaB/Draft-Js-Editor).
 
 ## Features (To-Do)
-- [] All basic rich text functionality
+- [x] All basic rich text functionality
 - [] Image annotation
 - [] Canvas drawing/ background
 - [] Link embeds
