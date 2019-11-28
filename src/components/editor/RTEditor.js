@@ -109,6 +109,14 @@ const RichTEditor = () => {
 
   const plugins = [linkPlugin, notePlugin];
 
+  // whether there is a selection or not
+  let hasSelection = false;
+  const cursorPosition = editorState.getSelection().getAnchorOffset(); // or start of selection
+  const endOfSelction = editorState.getSelection().getFocusOffset();
+  if (cursorPosition !== endOfSelction) {
+    hasSelection = true;
+  }
+
   return (
     <div className="editor-wrapper">
       <Toolbar
@@ -124,6 +132,7 @@ const RichTEditor = () => {
         notePrompt={notePrompt}
         setNotePrompt={setNotePrompt}
         styles={styles}
+        hasSelection={hasSelection}
       />
       <Editor
         placeholder="Start..."

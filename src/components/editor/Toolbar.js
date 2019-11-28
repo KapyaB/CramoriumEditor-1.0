@@ -17,7 +17,8 @@ const Toolbar = ({
   linkPrompt,
   notePrompt,
   setNotePrompt,
-  styles
+  styles,
+  hasSelection
 }) => {
   const { basicInlineBtns, advInlineBtns, basicBlockBtns } = styleBtns;
 
@@ -118,16 +119,17 @@ const Toolbar = ({
     const activeStyle = editorState.getCurrentInlineStyle();
     // set font color btn color
     const currFontColor = Array.from(activeStyle).find(
-      style => style&&style.charAt(0) === "#"
+      style => style && style.charAt(0) === "#"
     );
     return (
-      <span
+      <button
         className="font-color-btn style-btn"
         style={{ borderBottom: `${currFontColor || "#000"} 3px solid` }}
         onMouseDown={() => setShowColors(!showColors)}
+        disabled={!hasSelection}
       >
         A
-      </span>
+      </button>
     );
   };
 
@@ -187,19 +189,19 @@ const Toolbar = ({
     // set font color btn color
     const currFontSize = Array.from(activeStyle).find(
       // the custom font size style starts with '_'
-      style => style &&style.charAt(0) === "_"
+      style => style && style.charAt(0) === "_"
     );
-    if (currFontSize){
+    if (currFontSize) {
       var fSize = parseInt(currFontSize.slice(12).replace("px", "")) || 12;
     }
 
     return (
-      <span
+      <input
+        disabled={!hasSelection}
         className="font-size"
         onClick={() => setFontSizeForm(!fontSizeForm)}
-      >
-        {fSize || 12}
-      </span>
+        value={fSize || 12}
+      />
     );
   };
 
@@ -265,12 +267,14 @@ const Toolbar = ({
           <button
             className="style-btn"
             onMouseDown={() => setLinkPrompt(!linkPrompt)}
+            disabled={!hasSelection}
           >
             Link
           </button>
           <button
             className="style-btn"
             onMouseDown={() => setNotePrompt(!notePrompt)}
+            disabled={!hasSelection}
           >
             Note
           </button>
@@ -290,7 +294,8 @@ Toolbar.propTypes = {
   setLinkPrompt: PropTypes.func.isRequired,
   notePrompt: PropTypes.bool.isRequired,
   setNotePrompt: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
+  hasSelection: PropTypes.bool.isRequired
 };
 
 export default Toolbar;

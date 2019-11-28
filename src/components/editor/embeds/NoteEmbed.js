@@ -50,6 +50,9 @@ const NoteEmbed = ({
   };
   return (
     <div className="note-form-wrapper">
+      <button className="close-form" onClick={() => setNotePrompt(false)}>
+        x
+      </button>
       <form onSubmit={e => handleSubmit(e)} className="note-form">
         <textarea
           name="note"

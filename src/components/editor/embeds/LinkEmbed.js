@@ -47,6 +47,9 @@ const LinkEmbed = ({
   };
   return (
     <div className="link-form-wrapper">
+      <button className="close-form" onClick={() => setLinkPrompt(false)}>
+        x
+      </button>
       <form onSubmit={e => handleSubmit(e)} className="link-form">
         <input
           type="text"
