@@ -14,6 +14,8 @@ export var styleMap = {
   "#000": {
     color: "#000"
   },
+
+  // colors
   "#333": {
     color: "#333"
   },
@@ -118,6 +120,160 @@ export var styleMap = {
   },
   "#F05E23": {
     color: "#F05E23"
+  },
+
+  // font families
+  font_Sans_Serif: {
+    fontFamily: "sans-serif"
+  },
+  font_Roboto: {
+    fontFamily: "Roboto, sans-serif"
+  },
+  font_Open_Sans: {
+    fontFamily: "Open Sans, sans-serif"
+  },
+  font_Times_New_Roman: {
+    fontFamily: "Times New Roman, sans-serif"
+  },
+  font_Georgia: {
+    fontFamily: "Georgia, sans-serif"
+  },
+  font_Arial: {
+    fontFamily: "Arial, sans-serif"
+  },
+  font_Verdana: {
+    fontFamily: "verdana, sans-serif"
+  },
+  font_Courier_New: {
+    fontFamily: "Courier New, sans-serif"
+  },
+  font_Lucida_Console: {
+    fontFamily: "Lucida Console, sans-serif"
+  },
+  font_Barlow: {
+    fontFamily: "Barlow, sans-serif"
+  },
+  font_Dancing_Script: {
+    fontFamily: "Dancing Script, sans-serif"
+  },
+  font_Inconsolata: {
+    fontFamily: "Inconsolata, sans-serif"
+  },
+  font_Lato: {
+    fontFamily: "Lato, sans-serif"
+  },
+  font_Libre_Baskerville: {
+    fontFamily: "Libre Baskerville, sans-serif"
+  },
+  font_Montserrat: {
+    fontFamily: "Montserrat, sans-serif"
+  },
+  font_Pacifico: {
+    fontFamily: "Pacifico, sans-serif"
+  },
+  font_Lobster: {
+    fontFamily: "Lobster, sans-serif"
+  },
+  font_Raleway: {
+    fontFamily: "Raleway, sans-serif"
+  },
+  font_Roboto_Mono: {
+    fontFamily: "Roboto Mono, sans-serif"
+  },
+  font_Source_Sans_Pro: {
+    fontFamily: "Source Sans Pro, sans-serif"
+  },
+  font_Caveat: {
+    fontFamily: "Caveat",
+    fontStyle: "cursive"
+  },
+  font_Satisfy: {
+    fontFamily: "Satisfy",
+    fontStyle: "cursive"
+  },
+  font_Great_Vibes: {
+    fontFamily: "Great Vibes",
+    fontStyle: "cursive"
+  },
+  font_Cookie: {
+    fontFamily: "Cookie",
+    fontStyle: "cursive"
+  },
+  font_Sacramento: {
+    fontFamily: "Sacramento",
+    fontStyle: "cursive"
+  },
+  font_Parisienne: {
+    fontFamily: "Parisienne",
+    fontStyle: "cursive"
+  },
+  font_Marck_Script: {
+    fontFamily: "Marck Script",
+    fontStyle: "cursive"
+  },
+  font_Tangerine: {
+    fontFamily: "Tangerine",
+    fontStyle: "cursive"
+  },
+  font_Merienda: {
+    fontFamily: "Merienda",
+    fontStyle: "cursive"
+  },
+  font_Pinyon_Script: {
+    fontFamily: "Pinyon Script",
+    fontStyle: "cursive"
+  },
+  font_Italianno: {
+    fontFamily: "Italianno",
+    fontStyle: "cursive"
+  },
+  font_Ubuntu: {
+    fontFamily: "Ubuntu, sans-serif"
+  },
+  font_Nunito: {
+    fontFamily: "Nunito, sans-serif"
+  },
+  font_Questrial: {
+    fontFamily: "Questrial, sans-serif"
+  },
+  font_Rubik: {
+    fontFamily: "Rubik, sans-serif"
+  },
+  font_Calistoga: {
+    fontFamily: "Calistoga, sans-serif"
+  },
+  font_Quicksand: {
+    fontFamily: "Quicksand, sans-serif"
+  },
+  font_Josefin_Sans: {
+    fontFamily: "Josefin Sans, sans-serif"
+  },
+  font_Cabin: {
+    fontFamily: "Cabin, sans-serif"
+  },
+  font_Mukta: {
+    fontFamily: "Mukta, sans-serif"
+  },
+  font_Abel: {
+    fontFamily: "Abel, sans-serif"
+  },
+  font_Roboto_Slab: {
+    fontFamily: "Roboto Slab, serif"
+  },
+  font_Cinzel: {
+    fontFamily: "Cinzel, serif"
+  },
+  font_Cormorant_Garamond: {
+    fontFamily: "Cormorant Garamond, serif"
+  },
+  font_Playfair_Display_SC: {
+    fontFamily: "Playfair Display SC, serif"
+  },
+  font_Domine: {
+    fontFamily: "Domine, serif"
+  },
+  font_Crimson_Text: {
+    fontFamily: "Crimson Text, serif"
   }
 };
 

@@ -117,6 +117,8 @@ const RichTEditor = () => {
     hasSelection = true;
   }
 
+  // console.log(editorState.getCurrentInlineStyle().toArray());
+
   return (
     <div className="editor-wrapper">
       <Toolbar

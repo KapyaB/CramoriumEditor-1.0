@@ -138,7 +138,7 @@ const Toolbar = ({
     const selection = editorState.getSelection();
     // remove any previuosly active colors
     const colorStyles = Object.keys(styleMap).filter(
-      style => style.charAt(0) === "#"
+      style => style && style.charAt(0) === "#"
     );
 
     const nextContentState = colorStyles.reduce((contentState, color) => {
@@ -152,7 +152,9 @@ const Toolbar = ({
     );
 
     const currentStyle = editorState.getCurrentInlineStyle();
-    const currentColor = currentStyle.find(style => style.charAt(0) === "#");
+    const currentColor = currentStyle.find(
+      style => style && style.charAt(0) === "#"
+    );
 
     // Unset style override for current color.
     if (selection.isCollapsed()) {
@@ -205,6 +207,125 @@ const Toolbar = ({
     );
   };
 
+  // fonts
+  const fonts = [
+    "Sans_Serif",
+    "Open_Sans",
+    "Times_New_Roman",
+    "Georgia",
+    "Arial",
+    "Verdana",
+    "Courier_New",
+    "Lucida_Console",
+    "Caveat ",
+    "Cookie ",
+    "Great_Vibes ",
+    "Italianno ",
+    "Marck_Script ",
+    "Merienda ",
+    "Parisienne ",
+    "Pinyon_Script ",
+    "Sacramento ",
+    "Satisfy ",
+    "Tangerine ",
+    "Barlow ",
+    "Dancing_Script ",
+    "Inconsolata ",
+    "Lato ",
+    "Libre_Baskerville ",
+    "Lobster ",
+    "Montserrat ",
+    "Open_Sans ",
+    "Pacifico ",
+    "Raleway ",
+    "Roboto ",
+    "Roboto_Mono ",
+    "Source_Sans_Pro ",
+    "Abel ",
+    "Cabin ",
+    "Calistoga ",
+    "Josefin_Sans ",
+    "Mukta ",
+    "Nunito ",
+    "Questrial ",
+    "Quicksand ",
+    "Rubik ",
+    "Ubuntu ",
+    "Cinzel ",
+    "Cormorant_Garamond ",
+    "Crimson_Text ",
+    "Domine ",
+    "Playfair_Display_SC ",
+    "Roboto_Slab"
+  ];
+
+  const [showFonts, setShowFonts] = useState(false);
+  // create the font select tag
+  const createFontBtn = () => {
+    const activeStyle = editorState.getCurrentInlineStyle();
+    // set font color btn color
+    const currFont = Array.from(activeStyle).find(
+      // font styles start with 'font_'
+      style => style && style.slice(0, 5) === "font_"
+    );
+
+    return (
+      <button
+        disabled={!hasSelection}
+        className=" current-font style-btn"
+        onMouseDown={() => setShowFonts(!showFonts)}
+        style={{
+          fontFamily: currFont
+            ? currFont.replace("font_", "").replace(/_/g, " ")
+            : "Arial"
+        }}
+      >
+        {currFont ? currFont.replace("font_", "").replace(/_/g, " ") : "Arial"}
+      </button>
+    );
+  };
+
+  // handle font click. remove previous font
+  const onFontClick = toggledFont => {
+    const selection = editorState.getSelection();
+    // remove any previuosly active colors
+    const fontStyles = Object.keys(styleMap).filter(
+      style => style && style.slice(0, 5) === "font_"
+    );
+
+    const nextContentState = fontStyles.reduce((contentState, font) => {
+      return Modifier.removeInlineStyle(contentState, selection, font);
+    }, editorState.getCurrentContent());
+    console.log(nextContentState.toString());
+    let nextEditorState = EditorState.push(
+      editorState,
+      nextContentState,
+      "change-inline-style"
+    );
+
+    const currentStyle = editorState.getCurrentInlineStyle();
+    const currentFont = currentStyle.find(
+      style => style && style.slice(0, 5) === "font_"
+    );
+
+    // Unset style override for current font.
+    if (selection.isCollapsed()) {
+      nextEditorState = RichUtils.toggleInlineStyle(editorState, currentFont);
+    }
+
+    // If the font is being toggled on, apply it.
+    if (!currentStyle.has(toggledFont)) {
+      nextEditorState = RichUtils.toggleInlineStyle(
+        nextEditorState,
+        toggledFont
+      );
+    }
+
+    setEditorState(nextEditorState);
+
+    setShowFonts(false);
+  };
+
   return (
     <div className="editor-styles">
       <div className="inline-styles">
@@ -212,7 +333,6 @@ const Toolbar = ({
           <div className="font-color">
             {showColors && (
               <div className="color-picker">
-                colors
                 {colors.map(clr => (
                   <button
                     className="color-btn"
@@ -230,6 +350,27 @@ const Toolbar = ({
               </div>
             )}
             {createFontColorBtn()}
+            <div className="font-selector">
+              {createFontBtn()}
+              {showFonts && (
+                <div className="font-list">
+                  {fonts.sort().map(font => (
+                    <button
+                      className="font-option"
+                      style={{
+                        fontFamily: font.replace(/_/g, " ")
+                      }}
+                      onMouseDown={() => onFontClick(`font_${font}`)}
+                      onClick={toggleInlineStyle}
+                      key={font}
+                      data-style={`font_${font}`}
+                    >
+                      {font.replace(/_/g, " ")}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             {fontSizeForm ? (
               <input
                 onMouseOut={() => setFontSizeForm(false)}
