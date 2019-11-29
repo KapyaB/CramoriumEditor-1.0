@@ -36,7 +36,6 @@ const RichTEditor = () => {
 
     // remove previous font/color/alignment
     const selection = editorState.getSelection();
-    console.log(selection);
 
     if (
       style.slice(0, 5) === "font_" ||
@@ -300,7 +299,7 @@ const RichTEditor = () => {
   }, []);
 
   useEffect(() => {
-    focus(editorRef);
+    // focus(editorRef);
   });
   // console.log(editorState.getCurrentInlineStyle().toArray());
 

@@ -2,49 +2,66 @@ import React from "react";
 const styleBtns = {
   basicInlineBtns: [
     {
-      value: <strong>B</strong>,
+      value: <i className="fas fa-bold" />,
       style: "BOLD"
     },
 
     {
-      value: <em>I</em>,
+      value: <i className="fas fa-italic" />,
       style: "ITALIC"
     },
 
     {
-      value: <p style={{ textDecoration: "underline" }}>U</p>,
+      value: <i className=" fas fa-underline" />,
       style: "UNDERLINE"
     }
   ],
 
   advInlineBtns: [
     {
-      value: <p style={{ textDecoration: "line-through" }}>abc</p>,
+      value: <i className="fas fa-strikethrough" />,
       style: "STRIKETHROUGH"
     },
 
     {
-      value: "<>",
+      value: <i className="fas fa-code" />,
       style: "CODE"
     },
 
     {
-      value: <p style={{ color: "#fff", background: "#e9ff32" }}>H</p>,
+      value: <i className="fas fa-highlighter" />,
       style: "HIGHLIGHT"
     },
 
     {
-      value: "Sup",
+      value: <i className="fas fa-superscript" />,
       style: "SUPERSCRIPT"
     },
 
     {
-      value: "Sub",
+      value: <i className="fas fa-subscript" />,
       style: "SUBSCRIPT"
     }
   ],
 
   basicBlockBtns: [
+    {
+      value: <i className="fas fa-quote-left" />,
+      block: "blockquote"
+    },
+
+    {
+      value: <i className="fas fa-list" />,
+      block: "unordered-list-item"
+    },
+
+    {
+      value: <i className="fas fa-list-ol" />,
+      block: "ordered-list-item"
+    }
+  ],
+
+  headers: [
     {
       value: "H1",
       block: "header-one"
@@ -71,41 +88,27 @@ const styleBtns = {
     {
       value: "H6",
       block: "header-six"
-    },
-    {
-      value: <strong>"</strong>,
-      block: "blockquote"
-    },
-
-    {
-      value: "UL",
-      block: "unordered-list-item"
-    },
-
-    {
-      value: "OL",
-      block: "ordered-list-item"
     }
   ],
 
   alignBts: [
     {
-      value: "AL",
+      value: <i className="fas fa-align-left" />,
       style: "__TEXT_ALIGN_align-left",
       alignment: "align-left"
     },
     {
-      value: "AC",
+      value: <i className="fas fa-align-center" />,
       style: "__TEXT_ALIGN_align-center",
       alignment: "align-center"
     },
     {
-      value: "AJ",
+      value: <i className="fas fa-align-justify" />,
       style: "__TEXT_ALIGN_align-justify",
       alignment: "align-justify"
     },
     {
-      value: "AR",
+      value: <i className="fas fa-align-right" />,
       style: "__TEXT_ALIGN_align-right",
       alignment: "align-right"
     }

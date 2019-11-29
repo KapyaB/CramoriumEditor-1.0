@@ -23,7 +23,8 @@ const Toolbar = ({
     basicInlineBtns,
     advInlineBtns,
     basicBlockBtns,
-    alignBts
+    alignBts,
+    headers
   } = styleBtns;
   const activeStyles = editorState.getCurrentInlineStyle().toArray();
 
@@ -136,18 +137,14 @@ const Toolbar = ({
         onMouseDown={() => setShowColors(!showColors)}
         /* disabled={!hasSelection} */
       >
-        A
+        <i className="fas fa-font" />
       </button>
     );
   };
 
   // FONT SIZE
-  const [fontSize, setFontSize] = useState(12);
-  const [fontSizeForm, setFontSizeForm] = useState(false);
-
   const handleFontSizeChange = e => {
     const newSize = e.target.value;
-    setFontSize(newSize);
     const newEditorState = styles.fontSize.toggle(editorState, `${newSize}px`);
     setEditorState(newEditorState);
   };
@@ -166,10 +163,41 @@ const Toolbar = ({
     return (
       <input
         disabled={!hasSelection}
-        className="font-size"
-        onClick={() => setFontSizeForm(!fontSizeForm)}
+        className="font-size style-btn"
         value={fSize || 12}
+        type="number"
+        min="1"
+        step="1"
+        placeholder="font size"
+        data-style="size"
+        onChange={e => {
+          toggleInlineStyle(e);
+          handleFontSizeChange(e);
+        }}
+        name="fontSize"
       />
+    );
+  };
+
+  // headers
+  const [showHeaders, setShowHeaders] = useState(false);
+  const createHeaderBtn = (value, block) => {
+    // check currently active block type
+    const activeBlockType = RichUtils.getCurrentBlockType(editorState);
+    let className = "";
+    if (activeBlockType === block) {
+      className = "active-style";
+    }
+    return (
+      <button
+        key={block}
+        data-block={block}
+        onClick={() => setShowHeaders(false)}
+        onMouseDown={toggleBlockType}
+        className={`style-btn ${className}`}
+      >
+        {value}
+      </button>
     );
   };
 
@@ -229,8 +257,8 @@ const Toolbar = ({
   // create the font select tag
   const createFontBtn = () => {
     /**
-     * ALERT!!
-     * This is a workaround. When selection is uncollapsed, the new font is not a replacement, but simply an addition. Same is true for slecting text with a previously applied font. The font in the editor will change, but the array of inline styles still contains the other fonts. WORK ON IT!!!
+     * WORKAROUNDALERT!!
+     * When selection is uncollapsed, the new font is not a replacement, but simply an addition. Same is true for slecting text with a previously applied font. The font in the editor will change, but the array of inline styles still contains the other fonts. WORK ON IT!!!
      */
     const fontStyles = activeStyles.filter(
       style => style && style.slice(0, 5) === "font_"
@@ -302,21 +330,7 @@ const Toolbar = ({
               </div>
             )}
           </div>
-          {fontSizeForm ? (
-            <input
-              onMouseOut={() => setFontSizeForm(false)}
-              type="number"
-              min="1"
-              step="1"
-              placeholder="font size"
-              className="font-size-input"
-              onChange={e => handleFontSizeChange(e)}
-              name="fontSize"
-              value={fontSize}
-            />
-          ) : (
-            createFontSizeBtn()
-          )}
+          {createFontSizeBtn()}
           <div className="font-color">
             {showColors && (
               <div className="color-picker">
@@ -340,7 +354,6 @@ const Toolbar = ({
             )}
             {createFontColorBtn()}
           </div>
-
           {basicInlineBtns.map(btn => createInlineBtn(btn.value, btn.style))}
         </div>
         <div className="advanced-inline">
@@ -349,6 +362,15 @@ const Toolbar = ({
       </div>
       <div className="block-styles">
         <div className="basic-blocks">
+          <div className="headers">
+            <button
+              className="headers-btn style-btn"
+              onMouseDown={() => setShowHeaders(!showHeaders)}
+            >
+              Headers
+            </button>
+            {showHeaders && headers.map(h => createHeaderBtn(h.value, h.block))}
+          </div>
           {basicBlockBtns.map(btn => createBlockBtn(btn.value, btn.block))}
         </div>
         <div className="advanced-btns">
@@ -361,21 +383,21 @@ const Toolbar = ({
             className="style-btn"
             onClick={() => setImagePrompt(!imagePrompt)}
           >
-            Image
+            <i className="far fa-image" />
           </button>
           <button
             className="style-btn"
             onMouseDown={() => setLinkPrompt(!linkPrompt)}
             disabled={!hasSelection}
           >
-            Link
+            <i class="fas fa-link" />
           </button>
           <button
             className="style-btn"
             onMouseDown={() => setNotePrompt(!notePrompt)}
             disabled={!hasSelection}
           >
-            Note
+            <i class="far fa-sticky-note" />
           </button>
         </div>
       </div>

@@ -25,8 +25,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-[class^="cr-icon-cr-"]:before,
-[class*=" cr-icon-cr-"]:before {
+[class^="cr-"]:before,
+[class*=" cr-"]:before {
   font-family: "cramorium-icons" !important;
   font-style: normal !important;
   font-weight: normal !important;
@@ -38,15 +38,45 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.cr-icon-cr-underline:before {
+.cr-align-c:before {
   content: "\61";
 }
-.cr-icon-cr-italic:before {
+.cr-align-j:before {
   content: "\62";
 }
-.cr-icon-cr-font-color:before {
+.cr-align-l:before {
   content: "\63";
 }
-.cr-icon-cr-bold:before {
+.cr-align-r:before {
   content: "\64";
+}
+.cr-bold:before {
+  content: "\65";
+}
+.cr-font-color:before {
+  content: "\66";
+}
+.cr-highlight:before {
+  content: "\67";
+}
+.cr-italic:before {
+  content: "\68";
+}
+.cr-orderd-list:before {
+  content: "\69";
+}
+.cr-strike:before {
+  content: "\6a";
+}
+.cr-subscript:before {
+  content: "\6b";
+}
+.cr-superscript:before {
+  content: "\6c";
+}
+.cr-unordered-list:before {
+  content: "\6d";
+}
+.cr-underline:before {
+  content: "\6e";
 }
