@@ -41,18 +41,6 @@ const styleBtns = {
     {
       value: "Sub",
       style: "SUBSCRIPT"
-    },
-    {
-      value: "A-C",
-      style: "ALIGN_C"
-    },
-    {
-      value: "A-R",
-      style: "ALIGN_R"
-    },
-    {
-      value: "A-J",
-      style: "ALIGN_J"
     }
   ],
 
@@ -97,6 +85,29 @@ const styleBtns = {
     {
       value: "OL",
       block: "ordered-list-item"
+    }
+  ],
+
+  alignBts: [
+    {
+      value: "AL",
+      style: "__TEXT_ALIGN_align-left",
+      alignment: "align-left"
+    },
+    {
+      value: "AC",
+      style: "__TEXT_ALIGN_align-center",
+      alignment: "align-center"
+    },
+    {
+      value: "AJ",
+      style: "__TEXT_ALIGN_align-justify",
+      alignment: "align-justify"
+    },
+    {
+      value: "AR",
+      style: "__TEXT_ALIGN_align-right",
+      alignment: "align-right"
     }
   ]
 };

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, createRef } from "react";
-import { EditorState, RichUtils, Modifier, convertToRaw } from "draft-js";
+import {
+  EditorState,
+  RichUtils,
+  Modifier,
+  convertToRaw,
+  SelectionState,
+  ContentBlock
+} from "draft-js";
 import Editor from "draft-js-plugins-editor";
 import createStyles from "draft-js-custom-styles";
 
@@ -27,10 +34,15 @@ const RichTEditor = () => {
     // grab the style to toggle from the clicked element/btn
     let style = e.currentTarget.getAttribute("data-style");
 
-    // remove previous font/color
+    // remove previous font/color/alignment
     const selection = editorState.getSelection();
+    console.log(selection);
 
-    if (style.slice(0, 5) === "font_" || style.charAt(0) === "#") {
+    if (
+      style.slice(0, 5) === "font_" ||
+      style.slice(0, 12) === "__TEXT_ALIGN" ||
+      style.charAt(0) === "#"
+    ) {
       // find the styles currently active
       var styles;
       if (style.slice(0, 5) === "font_") {
@@ -43,8 +55,13 @@ const RichTEditor = () => {
           .getCurrentInlineStyle()
           .toArray()
           .filter(style => style && style.charAt(0) === "#");
+      } else if (style.slice(0, 12) === "__TEXT_ALIGN") {
+        styles = editorState
+          .getCurrentInlineStyle()
+          .toArray()
+          .filter(style => style && style.slice(0, 12) === "__TEXT_ALIGN");
       }
-      // remove previous font/color
+      // remove previous font/color/alignment
       const nextContentState = styles.reduce((contentState, style) => {
         return Modifier.removeInlineStyle(contentState, selection, style);
       }, editorState.getCurrentContent());
@@ -167,27 +184,27 @@ const RichTEditor = () => {
       get selected or new block using anchor key and the "data-offset-key" attribute(from draft) 
       the first set of chars in the data offset key is the same as the block's anchor key.
     */
-
-  const onAlignClick = alignment => {
-    focus(editorRef);
-    const newEditorState = styles.textAlign.toggle(editorState, `${alignment}`);
-    setEditorState(newEditorState);
-  };
-
   // apply alignment
-  useEffect(() => {
+  const applyAlignment = () => {
     allBlocks.map(block => {
       const blockInlineStyles = block.inlineStyleRanges;
-
       // check if it contains alignment
       var alignPosition;
-      const aligned = blockInlineStyles.filter(
+      console.log(blockInlineStyles);
+
+      // the alignments in the whole block
+      const alignments = blockInlineStyles.filter(
         styleRange => styleRange.style.slice(0, 12) === "__TEXT_ALIGN"
       );
 
-      // if there are blocks with alignment
-      if (aligned.length > 0) {
-        switch (aligned[0].style.slice(19)) {
+      // check
+      var alingment = alignments[alignments.length - 1];
+      // console.log(alignments);
+
+      // // if there are blocks with alignment
+      if (alingment) {
+        // replace alignment
+        switch (alingment.style.slice(19)) {
           default:
             return "align-left";
           case "left":
@@ -209,26 +226,82 @@ const RichTEditor = () => {
             blockNode.getAttribute("data-offset-key").split("-")[0] ===
             block.key
         );
+        // const classes = blockNode.classList;
+        // classes.add(alignPosition);
 
         if (blockNode) {
           const classes = blockNode.classList;
+
           // remove previously added (default has only two classes, so remove 3rd)
-          console.log(classes);
           if (classes.length > 2) {
-            classes.remove(classes[2]);
+            // console.log(classes, alignPosition);
+            classes.replace(classes[2], alignPosition);
+          } else {
             classes.add(alignPosition);
           }
-          // add alignment class
-          classes.add(alignPosition);
+          // console.log(blockNode.classList);
         }
       }
     });
+  };
+
+  // alignment
+  const onAlignClick = e => {
+    // don't blur the editor
+    e.preventDefault();
+    const selection = editorState.getSelection();
+    if (!selection) {
+      /**
+       * WORKAROUND ALERT!!
+       * we are using the inline styles array to keey a record of the applied aligments. Hence we are only using the last applied alignment (every new alignment is appended not a replacement).abs
+       *
+       * simulate a selection on the entire block and toggle the alignment;
+       * 1. get all the inline tyle ranges on the block
+       * 2. get the offset of the first range and offset+length (lenth of block = this value-offset of first) of the last.
+       * 3. create a new selection state with the block's key as the anchor and focus key, the achor offset is the offset of the first range (aka start of block) and the focus offset is the length of the last block
+       *  4. update editor state with selection
+       */
+
+      const anchorKey = editorState.getSelection().getAnchorKey();
+      const block = allBlocks.find(block => block.key === anchorKey);
+      const blockInlineStyles = block.inlineStyleRanges;
+
+      if (blockInlineStyles.length > 0) {
+        const blockOffset = blockInlineStyles[0].offset;
+        const lastRange = blockInlineStyles[blockInlineStyles.length - 1];
+        const lengthOfBlock = lastRange.length + lastRange.offset - blockOffset;
+
+        // selection
+        const selection = new SelectionState({
+          anchorKey: block.key,
+          anchorOffset: blockOffset,
+          focusKey: block.key,
+          focusOffset: lengthOfBlock
+        });
+
+        // update editor state with selection
+        setEditorState(EditorState.acceptSelection(editorState, selection));
+      }
+    }
+
+    // grab the style to toggle from the clicked element/btn
+    let alignment = e.currentTarget.getAttribute("alignment");
+
+    toggleInlineStyle(e);
+
+    const newEditorState = styles.textAlign.toggle(editorState, `${alignment}`);
+    setEditorState(newEditorState);
+
+    applyAlignment(alignment);
     focus(editorRef);
-  });
+  };
+  useEffect(() => {
+    applyAlignment();
+  }, []);
 
   useEffect(() => {
     focus(editorRef);
-  }, []);
+  });
   // console.log(editorState.getCurrentInlineStyle().toArray());
 
   return (

@@ -19,7 +19,12 @@ const Toolbar = ({
   hasSelection,
   onAlignClick
 }) => {
-  const { basicInlineBtns, advInlineBtns, basicBlockBtns } = styleBtns;
+  const {
+    basicInlineBtns,
+    advInlineBtns,
+    basicBlockBtns,
+    alignBts
+  } = styleBtns;
   const activeStyles = editorState.getCurrentInlineStyle().toArray();
 
   // Create inline buttons
@@ -249,6 +254,27 @@ const Toolbar = ({
     );
   };
 
+  // create alignment btn
+  const createAlignBtn = (value, style, alignment) => {
+    // check if is current alignment
+    const activeStyle = editorState.getCurrentInlineStyle();
+    let className = "";
+    if (activeStyle.has(style)) {
+      className = "active-style";
+    }
+    return (
+      <button
+        key={style}
+        data-style={style}
+        alignment={alignment}
+        onClick={onAlignClick}
+        className={`style-btn ${className}`}
+      >
+        {value}
+      </button>
+    );
+  };
+
   return (
     <div className="editor-styles">
       <div className="inline-styles">
@@ -327,30 +353,9 @@ const Toolbar = ({
         </div>
         <div className="advanced-btns">
           <div className="alignment-btns">
-            <button
-              className="style-btn align-btn"
-              onClick={() => onAlignClick("align-left")}
-            >
-              AL
-            </button>
-            <button
-              className="style-btn align-btn"
-              onClick={() => onAlignClick("align-center")}
-            >
-              AC
-            </button>
-            <button
-              className="style-btn align-btn"
-              onClick={() => onAlignClick("align-justify")}
-            >
-              AJ
-            </button>
-            <button
-              className="style-btn align-btn"
-              onClick={() => onAlignClick("align-right")}
-            >
-              AR
-            </button>
+            {alignBts.map(btn =>
+              createAlignBtn(btn.value, btn.style, btn.alignment)
+            )}
           </div>
           <button
             className="style-btn"
