@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { RichUtils, Modifier } from "draft-js";
+import { RichUtils } from "draft-js";
 
 import styleBtns from "./styleBtns";
-import styleMap from "./inlineStyles";
 
 const Toolbar = ({
-  EditorState,
   setEditorState,
   toggleInlineStyle,
   toggleBlockType,
@@ -18,9 +16,11 @@ const Toolbar = ({
   notePrompt,
   setNotePrompt,
   styles,
-  hasSelection
+  hasSelection,
+  onAlignClick
 }) => {
   const { basicInlineBtns, advInlineBtns, basicBlockBtns } = styleBtns;
+  const activeStyles = editorState.getCurrentInlineStyle().toArray();
 
   // Create inline buttons
   const createInlineBtn = (value, style) => {
@@ -61,6 +61,8 @@ const Toolbar = ({
       </button>
     );
   };
+
+  // COLORS
   const colors = [
     // bw
     "#000",
@@ -116,65 +118,25 @@ const Toolbar = ({
   const [showColors, setShowColors] = useState(false);
 
   const createFontColorBtn = () => {
-    const activeStyle = editorState.getCurrentInlineStyle();
-    // set font color btn color
-    const currFontColor = Array.from(activeStyle).find(
+    const activeColors = activeStyles.filter(
       style => style && style.charAt(0) === "#"
     );
+    // set font color btn color
+    const currFontColor = activeColors[activeColors.length - 1];
     return (
       <button
         className="font-color-btn style-btn"
         style={{ borderBottom: `${currFontColor || "#000"} 3px solid` }}
+        onMouseOver={() => setShowColors(true)}
         onMouseDown={() => setShowColors(!showColors)}
-        disabled={!hasSelection}
+        /* disabled={!hasSelection} */
       >
         A
       </button>
     );
   };
 
-  // handle color click. remove previous color
-  const onColorClick = toggledColor => {
-    const selection = editorState.getSelection();
-    // remove any previuosly active colors
-    const colorStyles = Object.keys(styleMap).filter(
-      style => style && style.charAt(0) === "#"
-    );
-
-    const nextContentState = colorStyles.reduce((contentState, color) => {
-      return Modifier.removeInlineStyle(contentState, selection, color);
-    }, editorState.getCurrentContent());
-
-    let nextEditorState = EditorState.push(
-      editorState,
-      nextContentState,
-      "change-inline-style"
-    );
-
-    const currentStyle = editorState.getCurrentInlineStyle();
-    const currentColor = currentStyle.find(
-      style => style && style.charAt(0) === "#"
-    );
-
-    // Unset style override for current color.
-    if (selection.isCollapsed()) {
-      nextEditorState = RichUtils.toggleInlineStyle(editorState, currentColor);
-    }
-
-    // If the color is being toggled on, apply it.
-    if (!currentStyle.has(toggledColor)) {
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        toggledColor
-      );
-    }
-
-    setEditorState(nextEditorState);
-
-    setShowColors(false);
-  };
-
-  // font size
+  // FONT SIZE
   const [fontSize, setFontSize] = useState(12);
   const [fontSizeForm, setFontSizeForm] = useState(false);
 
@@ -187,9 +149,8 @@ const Toolbar = ({
 
   // create the font size input
   const createFontSizeBtn = () => {
-    const activeStyle = editorState.getCurrentInlineStyle();
     // set font color btn color
-    const currFontSize = Array.from(activeStyle).find(
+    const currFontSize = activeStyles.find(
       // the custom font size style starts with '_'
       style => style && style.charAt(0) === "_"
     );
@@ -207,72 +168,75 @@ const Toolbar = ({
     );
   };
 
-  // fonts
+  // FONT FAMILY
   const fonts = [
     "Sans_Serif",
-    "Open_Sans",
+    "Serif",
     "Times_New_Roman",
     "Georgia",
     "Arial",
     "Verdana",
     "Courier_New",
     "Lucida_Console",
-    "Caveat ",
-    "Cookie ",
-    "Great_Vibes ",
-    "Italianno ",
-    "Marck_Script ",
-    "Merienda ",
-    "Parisienne ",
-    "Pinyon_Script ",
-    "Sacramento ",
-    "Satisfy ",
-    "Tangerine ",
-    "Barlow ",
-    "Dancing_Script ",
-    "Inconsolata ",
-    "Lato ",
-    "Libre_Baskerville ",
-    "Lobster ",
-    "Montserrat ",
-    "Open_Sans ",
-    "Pacifico ",
-    "Raleway ",
-    "Roboto ",
-    "Roboto_Mono ",
-    "Source_Sans_Pro ",
-    "Abel ",
-    "Cabin ",
-    "Calistoga ",
-    "Josefin_Sans ",
-    "Mukta ",
-    "Nunito ",
-    "Questrial ",
-    "Quicksand ",
-    "Rubik ",
-    "Ubuntu ",
-    "Cinzel ",
-    "Cormorant_Garamond ",
-    "Crimson_Text ",
-    "Domine ",
-    "Playfair_Display_SC ",
+    "Caveat",
+    "Cookie",
+    "Great_Vibes",
+    "Italianno",
+    "Marck_Script",
+    "Merienda",
+    "Parisienne",
+    "Pinyon_Script",
+    "Sacramento",
+    "Satisfy",
+    "Tangerine",
+    "Barlow",
+    "Dancing_Script",
+    "Inconsolata",
+    "Lato",
+    "Libre_Baskerville",
+    "Lobster",
+    "Montserrat",
+    "Open_Sans",
+    "Pacifico",
+    "Raleway",
+    "Roboto",
+    "Roboto_Mono",
+    "Source_Sans_Pro",
+    "Abel",
+    "Cabin",
+    "Calistoga",
+    "Josefin_Sans",
+    "Mukta",
+    "Nunito",
+    "Questrial",
+    "Quicksand",
+    "Rubik",
+    "Ubuntu",
+    "Cinzel",
+    "Cormorant_Garamond",
+    "Crimson_Text",
+    "Domine",
+    "Playfair_Display_SC",
     "Roboto_Slab"
   ];
 
   const [showFonts, setShowFonts] = useState(false);
   // create the font select tag
   const createFontBtn = () => {
-    const activeStyle = editorState.getCurrentInlineStyle();
-    // set font color btn color
-    const currFont = Array.from(activeStyle).find(
-      // font styles start with 'font_'
+    /**
+     * ALERT!!
+     * This is a workaround. When selection is uncollapsed, the new font is not a replacement, but simply an addition. Same is true for slecting text with a previously applied font. The font in the editor will change, but the array of inline styles still contains the other fonts. WORK ON IT!!!
+     */
+    const fontStyles = activeStyles.filter(
       style => style && style.slice(0, 5) === "font_"
     );
+    const currFont = fontStyles[fontStyles.length - 1];
 
     return (
       <button
-        disabled={!hasSelection}
+        /* disabled={!hasSelection} */
         className=" current-font style-btn"
+        onMouseOver={() => setShowFonts(true)}
         onMouseDown={() => setShowFonts(!showFonts)}
         style={{
           fontFamily: currFont
@@ -285,51 +249,48 @@ const Toolbar = ({
     );
   };
 
-  // handle font click. remove previous font
-  const onFontClick = toggledFont => {
-    const selection = editorState.getSelection();
-    // remove any previuosly active colors
-    const fontStyles = Object.keys(styleMap).filter(
-      style => style && style.slice(0, 5) === "font_"
-    );
-
-    const nextContentState = fontStyles.reduce((contentState, font) => {
-      return Modifier.removeInlineStyle(contentState, selection, font);
-    }, editorState.getCurrentContent());
-    console.log(nextContentState.toString());
-    let nextEditorState = EditorState.push(
-      editorState,
-      nextContentState,
-      "change-inline-style"
-    );
-
-    const currentStyle = editorState.getCurrentInlineStyle();
-    const currentFont = currentStyle.find(
-      style => style && style.slice(0, 5) === "font_"
-    );
-
-    // Unset style override for current font.
-    if (selection.isCollapsed()) {
-      nextEditorState = RichUtils.toggleInlineStyle(editorState, currentFont);
-    }
-
-    // If the font is being toggled on, apply it.
-    if (!currentStyle.has(toggledFont)) {
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        toggledFont
-      );
-    }
-
-    setEditorState(nextEditorState);
-
-    setShowFonts(false);
-  };
-
   return (
     <div className="editor-styles">
       <div className="inline-styles">
         <div className="basic-inline">
+          <div className="font-selector">
+            {createFontBtn()}
+            {showFonts && (
+              <div className="font-list">
+                {fonts.sort().map(font => (
+                  <button
+                    className="font-option"
+                    style={{
+                      fontFamily: font.replace(/_/g, " ")
+                    }}
+                    onMouseDown={e => {
+                      toggleInlineStyle(e);
+                      setShowFonts(false);
+                    }}
+                    key={font}
+                    data-style={`font_${font}`}
+                  >
+                    {font.replace(/_/g, " ")}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {fontSizeForm ? (
+            <input
+              onMouseOut={() => setFontSizeForm(false)}
+              type="number"
+              min="1"
+              step="1"
+              placeholder="font size"
+              className="font-size-input"
+              onChange={e => handleFontSizeChange(e)}
+              name="fontSize"
+              value={fontSize}
+            />
+          ) : (
+            createFontSizeBtn()
+          )}
           <div className="font-color">
             {showColors && (
               <div className="color-picker">
@@ -341,8 +302,10 @@ const Toolbar = ({
                       height: "1rem",
                       width: "1rem"
                     }}
-                    onMouseDown={() => onColorClick(clr)}
-                    onClick={toggleInlineStyle}
+                    onMouseDown={e => {
+                      toggleInlineStyle(e);
+                      setShowColors(false);
+                    }}
                     key={clr}
                     data-style={clr}
                   />
@@ -350,42 +313,6 @@ const Toolbar = ({
               </div>
             )}
             {createFontColorBtn()}
-            <div className="font-selector">
-              {createFontBtn()}
-              {showFonts && (
-                <div className="font-list">
-                  {fonts.sort().map(font => (
-                    <button
-                      className="font-option"
-                      style={{
-                        fontFamily: font.replace(/_/g, " ")
-                      }}
-                      onMouseDown={() => onFontClick(`font_${font}`)}
-                      onClick={toggleInlineStyle}
-                      key={font}
-                      data-style={`font_${font}`}
-                    >
-                      {font.replace(/_/g, " ")}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            {fontSizeForm ? (
-              <input
-                onMouseOut={() => setFontSizeForm(false)}
-                type="number"
-                min="1"
-                step="1"
-                placeholder="font size"
-                className="font-size-input"
-                onChange={e => handleFontSizeChange(e)}
-                name="fontSize"
-                value={fontSize}
-              />
-            ) : (
-              createFontSizeBtn()
-            )}
           </div>
 
           {basicInlineBtns.map(btn => createInlineBtn(btn.value, btn.style))}
@@ -399,9 +326,35 @@ const Toolbar = ({
           {basicBlockBtns.map(btn => createBlockBtn(btn.value, btn.block))}
         </div>
         <div className="advanced-btns">
+          <div className="alignment-btns">
+            <button
+              className="style-btn align-btn"
+              onClick={() => onAlignClick("align-left")}
+            >
+              AL
+            </button>
+            <button
+              className="style-btn align-btn"
+              onClick={() => onAlignClick("align-center")}
+            >
+              AC
+            </button>
+            <button
+              className="style-btn align-btn"
+              onClick={() => onAlignClick("align-justify")}
+            >
+              AJ
+            </button>
+            <button
+              className="style-btn align-btn"
+              onClick={() => onAlignClick("align-right")}
+            >
+              AR
+            </button>
+          </div>
           <button
             className="style-btn"
-            onMouseDown={() => setImagePrompt(!imagePrompt)}
+            onClick={() => setImagePrompt(!imagePrompt)}
           >
             Image
           </button>
@@ -436,7 +389,8 @@ Toolbar.propTypes = {
   notePrompt: PropTypes.bool.isRequired,
   setNotePrompt: PropTypes.func.isRequired,
   styles: PropTypes.object.isRequired,
-  hasSelection: PropTypes.bool.isRequired
+  hasSelection: PropTypes.bool.isRequired,
+  onAlignClick: PropTypes.func.isRequired
 };
 
 export default Toolbar;

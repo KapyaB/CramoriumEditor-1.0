@@ -1,2 +1,2 @@
-@import url('https://fonts.googleapis.com/css?family=Caveat|Cookie|Great+Vibes|Italianno|Marck+Script|Merienda|Parisienne|Pinyon+Script|Sacramento|Satisfy|Tangerine|Barlow|Dancing+Script|Inconsolata|Lato|Libre+Baskerville|Lobster|Montserrat|Open+Sans|Pacifico|Raleway|Roboto|Roboto+Mono|Source+Sans+Pro|Abel|Cabin|Calistoga|Josefin+Sans|Mukta|Nunito|Questrial|Quicksand|Rubik|Ubuntu|Cinzel|Cormorant+Garamond|Crimson+Text|Domine|Playfair+Display+SC|Roboto+Slab&display=swap');
+@import '../node_modules/draft-js/dist/Draft.css';
 @import './components//editor/editor.css'

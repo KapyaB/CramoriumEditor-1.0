@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { EditorState, RichUtils } from "draft-js";
+import React, { useState, useEffect, createRef } from "react";
+import { EditorState, RichUtils, Modifier, convertToRaw } from "draft-js";
 import Editor from "draft-js-plugins-editor";
 import createStyles from "draft-js-custom-styles";
 
 import styleMap from "./inlineStyles";
 import Toolbar from "./Toolbar";
-import "draft-js/dist/Draft.css";
 import { mediaBlockRenderer } from "./entities/MediaBlock";
 import linkPlugin from "./plugins/LinkPlugin";
 import functions from "./functions";
@@ -27,6 +26,40 @@ const RichTEditor = () => {
 
     // grab the style to toggle from the clicked element/btn
     let style = e.currentTarget.getAttribute("data-style");
+
+    // remove previous font/color
+    const selection = editorState.getSelection();
+
+    if (style.slice(0, 5) === "font_" || style.charAt(0) === "#") {
+      // find the styles currently active
+      var styles;
+      if (style.slice(0, 5) === "font_") {
+        styles = editorState
+          .getCurrentInlineStyle()
+          .toArray()
+          .filter(style => style && style.slice(0, 5) === "font_");
+      } else if (style.charAt(0) === "#") {
+        styles = editorState
+          .getCurrentInlineStyle()
+          .toArray()
+          .filter(style => style && style.charAt(0) === "#");
+      }
+      // remove previous font/color
+      const nextContentState = styles.reduce((contentState, style) => {
+        return Modifier.removeInlineStyle(contentState, selection, style);
+      }, editorState.getCurrentContent());
+
+      // define next editor state
+      let nextEditorState = EditorState.push(
+        editorState,
+        nextContentState,
+        "change-inline-style"
+      );
+
+      nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
+
+      return setEditorState(nextEditorState);
+    }
 
     // toggle the style. returns a new editor state
     setEditorState(RichUtils.toggleInlineStyle(editorState, style));
@@ -104,7 +137,7 @@ const RichTEditor = () => {
   const [notePrompt, setNotePrompt] = useState(false);
 
   // font size
-  const customStylesToManage = ["font-size"];
+  const customStylesToManage = ["font-size", "text-align"];
   const { styles, customStyleFn } = createStyles(customStylesToManage, "_");
 
   const plugins = [linkPlugin, notePlugin];
@@ -117,6 +150,85 @@ const RichTEditor = () => {
     hasSelection = true;
   }
 
+  const editorRef = createRef();
+  const focus = ref => {
+    ref && ref.current && ref.current.focus();
+  };
+
+  // text alignment
+  // All Blocks in editor
+  const allBlocks = convertToRaw(editorState.getCurrentContent()).blocks;
+  // TEXT ALIGNMENT
+  const allBlockNodes = document.getElementsByClassName(
+    "public-DraftStyleDefault-block"
+  );
+
+  /*
+      get selected or new block using anchor key and the "data-offset-key" attribute(from draft) 
+      the first set of chars in the data offset key is the same as the block's anchor key.
+    */
+
+  const onAlignClick = alignment => {
+    focus(editorRef);
+    const newEditorState = styles.textAlign.toggle(editorState, `${alignment}`);
+    setEditorState(newEditorState);
+  };
+
+  // apply alignment
+  useEffect(() => {
+    allBlocks.map(block => {
+      const blockInlineStyles = block.inlineStyleRanges;
+
+      // check if it contains alignment
+      var alignPosition;
+      const aligned = blockInlineStyles.filter(
+        styleRange => styleRange.style.slice(0, 12) === "__TEXT_ALIGN"
+      );
+
+      // if there are blocks with alignment
+      if (aligned.length > 0) {
+        switch (aligned[0].style.slice(19)) {
+          default:
+            return "align-left";
+          case "left":
+            alignPosition = "align-left";
+            break;
+          case "center":
+            alignPosition = "align-center";
+            break;
+          case "right":
+            alignPosition = "align-right";
+            break;
+          case "justify":
+            alignPosition = "align-justify";
+            break;
+        }
+
+        const blockNode = [...allBlockNodes].find(
+          blockNode =>
+            blockNode.getAttribute("data-offset-key").split("-")[0] ===
+            block.key
+        );
+
+        if (blockNode) {
+          const classes = blockNode.classList;
+          // remove previously added (default has only two classes, so remove 3rd)
+          console.log(classes);
+          if (classes.length > 2) {
+            classes.remove(classes[2]);
+            classes.add(alignPosition);
+          }
+          // add alignment class
+          classes.add(alignPosition);
+        }
+      }
+    });
+    focus(editorRef);
+  });
+
+  useEffect(() => {
+    focus(editorRef);
+  }, []);
   // console.log(editorState.getCurrentInlineStyle().toArray());
 
   return (
@@ -135,6 +247,7 @@ const RichTEditor = () => {
         setNotePrompt={setNotePrompt}
         styles={styles}
         hasSelection={hasSelection}
+        onAlignClick={onAlignClick}
       />
       <Editor
         placeholder="Start..."
@@ -146,6 +259,7 @@ const RichTEditor = () => {
         blockRendererFn={mediaBlockRenderer}
         plugins={plugins}
         customStyleFn={customStyleFn}
+        ref={editorRef}
       />
       {imagePrompt && (
         <ImageEmbed

@@ -41,6 +41,18 @@ const styleBtns = {
     {
       value: "Sub",
       style: "SUBSCRIPT"
+    },
+    {
+      value: "A-C",
+      style: "ALIGN_C"
+    },
+    {
+      value: "A-R",
+      style: "ALIGN_R"
+    },
+    {
+      value: "A-J",
+      style: "ALIGN_J"
     }
   ],
 

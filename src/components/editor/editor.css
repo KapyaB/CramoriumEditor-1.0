@@ -7,3 +7,24 @@
   background: blue;
   color: #fff;
 }
+
+.style-btn {
+  border: 1px solid #fff;
+}
+
+/* Aligment */
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-justify {
+  text-align: justify;
+}

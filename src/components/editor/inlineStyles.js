@@ -126,6 +126,9 @@ export var styleMap = {
   font_Sans_Serif: {
     fontFamily: "sans-serif"
   },
+  font_Serif: {
+    fontFamily: "serif"
+  },
   font_Roboto: {
     fontFamily: "Roboto, sans-serif"
   },
