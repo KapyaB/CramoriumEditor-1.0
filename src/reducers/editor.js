@@ -1,7 +1,7 @@
-import { SET_EVENT } from "../actions/types";
+import { SET_STYLE } from "../actions/types";
 
 const INITIAL_STATE = {
-  currEvent: null
+  currStyle: null
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -11,10 +11,10 @@ export default (state = INITIAL_STATE, action) => {
     default:
       return state;
 
-    case SET_EVENT:
+    case SET_STYLE:
       return {
         ...state,
-        currEvent: payload
+        currStyle: payload
       };
   }
 };

@@ -1,8 +1,8 @@
-import { SET_EVENT } from "./types";
+import { SET_STYLE } from "./types";
 
-export const setEvent = event => dispatch => {
+export const setStyle = style => dispatch => {
   dispatch({
-    type: SET_EVENT,
-    payload: event
+    type: SET_STYLE,
+    payload: style
   });
 };

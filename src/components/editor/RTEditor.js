@@ -8,6 +8,8 @@ import {
 } from "draft-js";
 import Editor from "draft-js-plugins-editor";
 import createStyles from "draft-js-custom-styles";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
 import styleMap from "./inlineStyles";
 import Toolbar from "./Toolbar";
@@ -22,7 +24,7 @@ import notePlugin from "./plugins/NotePlugin";
 // editor ref
 const editorRef = createRef();
 
-const RichTEditor = () => {
+const RichTEditor = ({ editor: { currStyle } }) => {
   const [ref, setRef] = useState(editorRef);
 
   const focus = () => {
@@ -76,7 +78,7 @@ const RichTEditor = () => {
     e.preventDefault();
 
     // grab the style to toggle from the clicked element/btn
-    let style = e.currentTarget.getAttribute("data-style");
+    let style = currStyle || e.currentTarget.getAttribute("data-style");
 
     // remove previous font/color/alignment
     const selection = editorState.getSelection();
@@ -415,6 +417,10 @@ const RichTEditor = () => {
   );
 };
 
-RichTEditor.propTypes = {};
+RichTEditor.propTypes = { editor: PropTypes.object.isRequired };
 
-export default RichTEditor;
+const mapStateToProps = state => ({
+  editor: state.editor
+});
+
+export default connect(mapStateToProps, {})(RichTEditor);

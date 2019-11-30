@@ -1,1 +1,1 @@
-export const SET_EVENT = "SET_EVENT";
+export const SET_STYLE = "SET_STYLE";

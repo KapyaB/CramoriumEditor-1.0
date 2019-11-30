@@ -4,7 +4,7 @@ import { RichUtils } from "draft-js";
 import { connect } from "react-redux";
 
 import styleBtns from "./styleBtns";
-import { setEvent } from "../../actions/actions";
+import { setStyle } from "../../actions/actions";
 
 const fSizeRef = createRef();
 
@@ -26,15 +26,16 @@ const Toolbar = ({
   editorRef,
   focus,
   simulateSelection,
-  setEvent,
-  editor: { currEvent }
+  setStyle,
+  editor: { currStyle }
 }) => {
   const {
     basicInlineBtns,
     advInlineBtns,
     basicBlockBtns,
     alignBts,
-    headers
+    headers,
+    fontSizes
   } = styleBtns;
   const activeStyles = editorState.getCurrentInlineStyle().toArray();
 
@@ -152,68 +153,68 @@ const Toolbar = ({
     );
   };
 
-  // FONT SIZE
-  const [fontSize, setFontSize] = useState(8);
-  const handleFontSizeChange = e => {
-    setFontSize(e.target.value);
-  };
+  // // FONT SIZE
+  // const [fontSize, setFontSize] = useState(8);
+  // const handleFontSizeChange = e => {
+  //   setFontSize(e.target.value);
+  // };
 
-  // keep event
-  const handleFontSizeSubmit = async e => {
-    setEvent(e);
-    e.preventDefault();
-    await simulateSelection(e);
-  };
+  // // create the font size input
+  // const createFontSizeBtn = () => {
+  //   // set font color btn color
+  //   const currFontSize = activeStyles.find(
+  //     // the custom font size style form '__FONT_SIZE_12px'
+  //     style => style && style.slice(13) === "px"
+  //   );
 
-  currEvent && toggleInlineStyle(currEvent);
-  // event && console.log(event.currentTarget.getAttribute("data-style"));
+  //   if (currFontSize) {
+  //     setFontSize(currFontSize);
+  //   }
 
-  // handle pressing enter on size input
-  const handleInputEnter = e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      // const newEditorState = styles.fontSize.toggle(
-      //   editorState,
-      //   `${fontSize}px`
-      // );
-      // setEditorState(newEditorState);
-      // toggleInlineStyle(e);
-      fSizeRef && fSizeRef.current && fSizeRef.current.blur(e);
-      // setRef(editorRef);
-      // focus();
-    }
-  };
+  //   return (
+  //     <input
+  //       /* disabled={!hasSelection} */
+  //       className="font-size style-btn"
+  //       value={fontSize}
+  //       type="number"
+  //       /* step="1" */
+  //       placeholder="font size"
+  //       data-style={`__FONT_SIZE_${fontSize}px`}
+  //       onChange={e => {
+  //         setRef(fSizeRef);
+  //         handleFontSizeChange(e);
+  //       }}
+  //       onKeyDown={handleInputEnter}
+  //       onBlur={handleFontSizeSubmit}
+  //       name="fontSize"
+  //       ref={fSizeRef}
+  //     />
+  //   );
+  // };
 
-  // create the font size input
-  const createFontSizeBtn = () => {
-    // set font color btn color
-    const currFontSize = activeStyles.find(
-      // the custom font size style form '__FONT_SIZE_12px'
-      style => style && style.slice(13) === "px"
-    );
-
-    if (currFontSize) {
-      setFontSize(currFontSize);
+  // font sizes
+  const [showFontSizes, setShowFontSizes] = useState(false);
+  const createFsizeBtn = (value, style) => {
+    // check if the style is active
+    const activeStyle = editorState.getCurrentInlineStyle();
+    let className = "";
+    const sizeStyles = activeStyle
+      .toArray()
+      .filter(style => style && style.slice(0, 6) === "fsize_");
+    console.log(sizeStyles);
+    if (activeStyle.has(style) && sizeStyles[sizeStyles.length - 1] === style) {
+      className = "active-style";
     }
 
     return (
-      <input
-        /* disabled={!hasSelection} */
-        className="font-size style-btn"
-        value={fontSize}
-        type="number"
-        /* step="1" */
-        placeholder="font size"
-        data-style={`__FONT_SIZE_${fontSize}px`}
-        onChange={e => {
-          setRef(fSizeRef);
-          handleFontSizeChange(e);
-        }}
-        onKeyDown={handleInputEnter}
-        onBlur={e => handleFontSizeSubmit(e)}
-        name="fontSize"
-        ref={fSizeRef}
-      />
+      <button
+        key={style}
+        data-style={style}
+        onMouseDown={toggleInlineStyle}
+        className={`style-btn ${className}`}
+      >
+        {value}
+      </button>
     );
   };
 
@@ -292,7 +293,7 @@ const Toolbar = ({
   ];
 
   const [showFonts, setShowFonts] = useState(false);
-  // create the font select tag
+  // create the font btn
   const createFontBtn = () => {
     /**
      * WORKAROUND ALERT!!
@@ -368,7 +369,16 @@ const Toolbar = ({
               </div>
             )}
           </div>
-          {createFontSizeBtn()}
+          <div className="font-sizes">
+            <button
+              className="style-btn"
+              onClick={() => setShowFontSizes(!showFontSizes)}
+            >
+              Font Size
+            </button>
+            {showFontSizes &&
+              fontSizes.map(btn => createFsizeBtn(btn.value, btn.style))}
+          </div>
           <div className="font-color">
             {showColors && (
               <div className="color-picker">
@@ -462,4 +472,4 @@ const mapStateToProps = state => ({
   editor: state.editor
 });
 
-export default connect(mapStateToProps, { setEvent })(Toolbar);
+export default connect(mapStateToProps, { setStyle })(Toolbar);

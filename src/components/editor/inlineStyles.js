@@ -11,11 +11,11 @@ export var styleMap = {
     verticalAlign: "sub",
     fontSize: "smaller"
   },
+
+  // colors
   "#000": {
     color: "#000"
   },
-
-  // colors
   "#333": {
     color: "#333"
   },
@@ -28,8 +28,8 @@ export var styleMap = {
   "#fff": {
     color: "#fff"
   },
-  "#c3160c": {
-    color: "#c3160c"
+  "#C3160C": {
+    color: "#C3160C"
   },
   "#800000": {
     color: "#800000"
@@ -62,7 +62,7 @@ export var styleMap = {
     color: "#C7EA46"
   },
   "#111E6C": {
-    color: "#000"
+    color: "#111E6C"
   },
   "#0E4D92": {
     color: "#0E4D92"
@@ -277,6 +277,26 @@ export var styleMap = {
   },
   font_Crimson_Text: {
     fontFamily: "Crimson Text, serif"
+  },
+  // font sizes
+  fsize_NORMAL: {
+    fontSize: "16px"
+  },
+
+  fsize_EXTRA_SMALL: {
+    fontSize: "xx-small"
+  },
+
+  fsize_SMALL: {
+    fontSize: "small"
+  },
+
+  fsize_LARGE: {
+    fontSize: "32px"
+  },
+
+  fsize_EXTRA_LARGE: {
+    fontSize: "48px"
   }
 };
 
