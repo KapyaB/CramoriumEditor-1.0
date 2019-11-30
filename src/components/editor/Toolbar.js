@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, createRef } from "react";
 import PropTypes from "prop-types";
 import { RichUtils } from "draft-js";
+import { connect } from "react-redux";
 
 import styleBtns from "./styleBtns";
+import { setEvent } from "../../actions/actions";
+
+const fSizeRef = createRef();
 
 const Toolbar = ({
   setEditorState,
@@ -17,7 +21,13 @@ const Toolbar = ({
   setNotePrompt,
   styles,
   hasSelection,
-  onAlignClick
+  onAlignClick,
+  setRef,
+  editorRef,
+  focus,
+  simulateSelection,
+  setEvent,
+  editor: { currEvent }
 }) => {
   const {
     basicInlineBtns,
@@ -143,38 +153,66 @@ const Toolbar = ({
   };
 
   // FONT SIZE
+  const [fontSize, setFontSize] = useState(8);
   const handleFontSizeChange = e => {
-    const newSize = e.target.value;
-    const newEditorState = styles.fontSize.toggle(editorState, `${newSize}px`);
-    setEditorState(newEditorState);
+    setFontSize(e.target.value);
+  };
+
+  // keep event
+  const handleFontSizeSubmit = async e => {
+    setEvent(e);
+    e.preventDefault();
+    await simulateSelection(e);
+  };
+
+  currEvent && toggleInlineStyle(currEvent);
+  // event && console.log(event.currentTarget.getAttribute("data-style"));
+
+  // handle pressing enter on size input
+  const handleInputEnter = e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      // const newEditorState = styles.fontSize.toggle(
+      //   editorState,
+      //   `${fontSize}px`
+      // );
+      // setEditorState(newEditorState);
+      // toggleInlineStyle(e);
+      fSizeRef && fSizeRef.current && fSizeRef.current.blur(e);
+      // setRef(editorRef);
+      // focus();
+    }
   };
 
   // create the font size input
   const createFontSizeBtn = () => {
     // set font color btn color
     const currFontSize = activeStyles.find(
-      // the custom font size style starts with '_'
-      style => style && style.charAt(0) === "_"
+      // the custom font size style form '__FONT_SIZE_12px'
+      style => style && style.slice(13) === "px"
     );
+
     if (currFontSize) {
-      var fSize = parseInt(currFontSize.slice(12).replace("px", "")) || 12;
+      setFontSize(currFontSize);
     }
 
     return (
       <input
-        disabled={!hasSelection}
+        /* disabled={!hasSelection} */
         className="font-size style-btn"
-        value={fSize || 12}
+        value={fontSize}
         type="number"
-        min="1"
-        step="1"
+        /* step="1" */
         placeholder="font size"
-        data-style="size"
+        data-style={`__FONT_SIZE_${fontSize}px`}
         onChange={e => {
-          toggleInlineStyle(e);
+          setRef(fSizeRef);
           handleFontSizeChange(e);
         }}
+        onKeyDown={handleInputEnter}
+        onBlur={e => handleFontSizeSubmit(e)}
         name="fontSize"
+        ref={fSizeRef}
       />
     );
   };
@@ -257,7 +295,7 @@ const Toolbar = ({
   // create the font select tag
   const createFontBtn = () => {
     /**
-     * WORKAROUNDALERT!!
+     * WORKAROUND ALERT!!
      * When selection is uncollapsed, the new font is not a replacement, but simply an addition. Same is true for slecting text with a previously applied font. The font in the editor will change, but the array of inline styles still contains the other fonts. WORK ON IT!!!
      */
     const fontStyles = activeStyles.filter(
@@ -295,7 +333,7 @@ const Toolbar = ({
         key={style}
         data-style={style}
         alignment={alignment}
-        onClick={onAlignClick}
+        onClick={() => onAlignClick(alignment)}
         className={`style-btn ${className}`}
       >
         {value}
@@ -390,14 +428,14 @@ const Toolbar = ({
             onMouseDown={() => setLinkPrompt(!linkPrompt)}
             disabled={!hasSelection}
           >
-            <i class="fas fa-link" />
+            <i className="fas fa-link" />
           </button>
           <button
             className="style-btn"
             onMouseDown={() => setNotePrompt(!notePrompt)}
             disabled={!hasSelection}
           >
-            <i class="far fa-sticky-note" />
+            <i className="far fa-sticky-note" />
           </button>
         </div>
       </div>
@@ -420,4 +458,8 @@ Toolbar.propTypes = {
   onAlignClick: PropTypes.func.isRequired
 };
 
-export default Toolbar;
+const mapStateToProps = state => ({
+  editor: state.editor
+});
+
+export default connect(mapStateToProps, { setEvent })(Toolbar);

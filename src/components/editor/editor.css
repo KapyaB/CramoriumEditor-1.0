@@ -12,6 +12,10 @@
   border: 1px solid #fff;
 }
 
+button:hover .style-btn:hover{
+  cursor:pointer
+}
+
 /* Aligment */
 .align-left {
   text-align: left;

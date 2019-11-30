@@ -4,8 +4,7 @@ import {
   RichUtils,
   Modifier,
   convertToRaw,
-  SelectionState,
-  ContentBlock
+  SelectionState
 } from "draft-js";
 import Editor from "draft-js-plugins-editor";
 import createStyles from "draft-js-custom-styles";
@@ -20,9 +19,54 @@ import LinkEmbed from "./embeds/LinkEmbed";
 import NoteEmbed from "./embeds/NoteEmbed";
 import notePlugin from "./plugins/NotePlugin";
 
-// plugins
+// editor ref
+const editorRef = createRef();
 
 const RichTEditor = () => {
+  const [ref, setRef] = useState(editorRef);
+
+  const focus = () => {
+    ref && ref.current && ref.current.focus();
+  };
+
+  // Simulate a selection
+  const simulateSelection = e => {
+    e.preventDefault();
+    e.persist();
+    const selection = editorState.getSelection();
+    if (!selection) {
+      /**
+       * WORKAROUND ALERT!!
+       * we are using the inline styles array to keey a record of the applied aligments. Hence we are only using the last applied alignment (every new alignment is appended not a replacement).abs
+       *
+       * simulate a selection on the entire block and toggle the alignment;
+       * 1. get all the inline tyle ranges on the block
+       * 2. get the offset of the first range and offset+length (lenth of block = this value-offset of first) of the last.
+       * 3. create a new selection state with the block's key as the anchor and focus key, the achor offset is the offset of the first range (aka start of block) and the focus offset is the length of the last block
+       *  4. update editor state with selection
+       */
+      const anchorKey = editorState.getSelection().getAnchorKey();
+      const block = allBlocks.find(block => block.key === anchorKey);
+      const blockInlineStyles = block.inlineStyleRanges;
+      if (blockInlineStyles.length > 0) {
+        const blockOffset = blockInlineStyles[0].offset;
+        const lastRange = blockInlineStyles[blockInlineStyles.length - 1];
+        const lengthOfBlock = lastRange.length + lastRange.offset - blockOffset;
+        // selection
+        const selection = new SelectionState({
+          anchorKey: block.key,
+          anchorOffset: blockOffset,
+          focusKey: block.key,
+          focusOffset: lengthOfBlock
+        });
+        // update editor state with selection
+        return setEditorState(
+          EditorState.acceptSelection(editorState, selection)
+        );
+      }
+    }
+  };
+
   // the EditorState state. Creates an empty editor initially
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
@@ -77,8 +121,14 @@ const RichTEditor = () => {
       return setEditorState(nextEditorState);
     }
 
+    if (style.slice(13) === "px") {
+      const newEditorState = styles.fontSize.toggle(editorState, style);
+      return setEditorState(newEditorState);
+    }
+
     // toggle the style. returns a new editor state
     setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+    setRef(editorRef);
   };
 
   // blockstyles
@@ -88,6 +138,7 @@ const RichTEditor = () => {
 
     let block = e.currentTarget.getAttribute("data-block");
     setEditorState(RichUtils.toggleBlockType(editorState, block));
+    setRef(editorRef);
   };
 
   // handle keyboard shortcuts
@@ -166,11 +217,6 @@ const RichTEditor = () => {
     hasSelection = true;
   }
 
-  const editorRef = createRef();
-  const focus = ref => {
-    ref && ref.current && ref.current.focus();
-  };
-
   // text alignment
   // All Blocks in editor
   const allBlocks = convertToRaw(editorState.getCurrentContent()).blocks;
@@ -196,14 +242,14 @@ const RichTEditor = () => {
         styleRange => styleRange.style.slice(0, 12) === "__TEXT_ALIGN"
       );
 
-      // check
-      var alingment = alignments[alignments.length - 1];
-      // console.log(alignments);
+      // // check
+      // var alingment = alignments[alignments.length - 1];
+      // // console.log(alignments);
 
       // // if there are blocks with alignment
-      if (alingment) {
+      if (alignments.length > 0) {
         // replace alignment
-        switch (alingment.style.slice(19)) {
+        switch (alignments[0].style.slice(19)) {
           default:
             return "align-left";
           case "left":
@@ -234,10 +280,10 @@ const RichTEditor = () => {
           // remove previously added (default has only two classes, so remove 3rd)
           if (classes.length > 2) {
             // console.log(classes, alignPosition);
-            classes.replace(classes[2], alignPosition);
-          } else {
-            classes.add(alignPosition);
+            classes.remove(classes[2]);
           }
+          classes.add(alignPosition);
+
           // console.log(blockNode.classList);
         }
       }
@@ -245,63 +291,64 @@ const RichTEditor = () => {
   };
 
   // alignment
-  const onAlignClick = e => {
+  const onAlignClick = alignment => {
     // don't blur the editor
-    e.preventDefault();
-    const selection = editorState.getSelection();
-    if (!selection) {
-      /**
-       * WORKAROUND ALERT!!
-       * we are using the inline styles array to keey a record of the applied aligments. Hence we are only using the last applied alignment (every new alignment is appended not a replacement).abs
-       *
-       * simulate a selection on the entire block and toggle the alignment;
-       * 1. get all the inline tyle ranges on the block
-       * 2. get the offset of the first range and offset+length (lenth of block = this value-offset of first) of the last.
-       * 3. create a new selection state with the block's key as the anchor and focus key, the achor offset is the offset of the first range (aka start of block) and the focus offset is the length of the last block
-       *  4. update editor state with selection
-       */
+    // e.preventDefault();
+    // const selection = editorState.getSelection();
+    // if (!selection) {
+    //   /**
+    //    * WORKAROUND ALERT!!
+    //    * we are using the inline styles array to keey a record of the applied aligments. Hence we are only using the last applied alignment (every new alignment is appended not a replacement).abs
+    //    *
+    //    * simulate a selection on the entire block and toggle the alignment;
+    //    * 1. get all the inline tyle ranges on the block
+    //    * 2. get the offset of the first range and offset+length (lenth of block = this value-offset of first) of the last.
+    //    * 3. create a new selection state with the block's key as the anchor and focus key, the achor offset is the offset of the first range (aka start of block) and the focus offset is the length of the last block
+    //    *  4. update editor state with selection
+    //    */
 
-      const anchorKey = editorState.getSelection().getAnchorKey();
-      const block = allBlocks.find(block => block.key === anchorKey);
-      const blockInlineStyles = block.inlineStyleRanges;
+    //   // const anchorKey = editorState.getSelection().getAnchorKey();
+    //   // const block = allBlocks.find(block => block.key === anchorKey);
+    //   // const blockInlineStyles = block.inlineStyleRanges;
 
-      if (blockInlineStyles.length > 0) {
-        const blockOffset = blockInlineStyles[0].offset;
-        const lastRange = blockInlineStyles[blockInlineStyles.length - 1];
-        const lengthOfBlock = lastRange.length + lastRange.offset - blockOffset;
+    //   // if (blockInlineStyles.length > 0) {
+    //   //   const blockOffset = blockInlineStyles[0].offset;
+    //   //   const lastRange = blockInlineStyles[blockInlineStyles.length - 1];
+    //   //   const lengthOfBlock = lastRange.length + lastRange.offset - blockOffset;
 
-        // selection
-        const selection = new SelectionState({
-          anchorKey: block.key,
-          anchorOffset: blockOffset,
-          focusKey: block.key,
-          focusOffset: lengthOfBlock
-        });
+    //   //   // selection
+    //   //   const selection = new SelectionState({
+    //   //     anchorKey: block.key,
+    //   //     anchorOffset: blockOffset,
+    //   //     focusKey: block.key,
+    //   //     focusOffset: lengthOfBlock
+    //   //   });
 
-        // update editor state with selection
-        setEditorState(EditorState.acceptSelection(editorState, selection));
-      }
-    }
+    //     // update editor state with selection
+    //     setEditorState(EditorState.acceptSelection(editorState, selection));
+    //   }
+    // }
 
     // grab the style to toggle from the clicked element/btn
-    let alignment = e.currentTarget.getAttribute("alignment");
+    // let alignment = e.currentTarget.getAttribute("alignment");
 
-    toggleInlineStyle(e);
+    // toggleInlineStyle(e);
 
     const newEditorState = styles.textAlign.toggle(editorState, `${alignment}`);
     setEditorState(newEditorState);
-
-    applyAlignment(alignment);
-    focus(editorRef);
   };
+
   useEffect(() => {
-    applyAlignment();
+    setTimeout(() => focus(), 0);
+
+    return () => setRef(null);
   }, []);
 
-  useEffect(() => {
-    // focus(editorRef);
-  });
-  // console.log(editorState.getCurrentInlineStyle().toArray());
+  // useEffect(() => {
+  //   applyAlignment();
+  // });
+
+  console.log(editorState.getCurrentInlineStyle().toArray());
 
   return (
     <div className="editor-wrapper">
@@ -320,6 +367,10 @@ const RichTEditor = () => {
         styles={styles}
         hasSelection={hasSelection}
         onAlignClick={onAlignClick}
+        setRef={setRef}
+        editorRef={editorRef}
+        focus={focus}
+        simulateSelection={simulateSelection}
       />
       <Editor
         placeholder="Start..."
