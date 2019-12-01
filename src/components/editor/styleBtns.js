@@ -44,29 +44,6 @@ const styleBtns = {
     }
   ],
 
-  fontSizes: [
-    {
-      value: "Extra small",
-      style: "fsize_EXTRA_SMALL"
-    },
-    {
-      value: "Small",
-      style: "fsize_SMALL"
-    },
-    {
-      value: "Normal",
-      style: "fsize_NORMAL"
-    },
-    {
-      value: "Large",
-      style: "fsize_LARGE"
-    },
-    {
-      value: "Extra large",
-      style: "fsize_EXTRA_LARGE"
-    }
-  ],
-
   basicBlockBtns: [
     {
       value: <i className="fas fa-quote-left" />,

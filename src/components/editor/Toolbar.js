@@ -4,7 +4,7 @@ import { RichUtils } from "draft-js";
 import { connect } from "react-redux";
 
 import styleBtns from "./styleBtns";
-import { setStyle } from "../../actions/actions";
+import { setStyle, setInlineStyles } from "../../actions/editor";
 
 const fSizeRef = createRef();
 
@@ -27,7 +27,8 @@ const Toolbar = ({
   focus,
   simulateSelection,
   setStyle,
-  editor: { currStyle }
+  editor: { currStyle },
+  setInlineStyles
 }) => {
   const {
     basicInlineBtns,
@@ -153,13 +154,13 @@ const Toolbar = ({
     );
   };
 
-  // // FONT SIZE
+  // FONT SIZE
   // const [fontSize, setFontSize] = useState(8);
   // const handleFontSizeChange = e => {
   //   setFontSize(e.target.value);
   // };
 
-  // // create the font size input
+  // create the font size input
   // const createFontSizeBtn = () => {
   //   // set font color btn color
   //   const currFontSize = activeStyles.find(
@@ -191,32 +192,6 @@ const Toolbar = ({
   //     />
   //   );
   // };
-
-  // font sizes
-  const [showFontSizes, setShowFontSizes] = useState(false);
-  const createFsizeBtn = (value, style) => {
-    // check if the style is active
-    const activeStyle = editorState.getCurrentInlineStyle();
-    let className = "";
-    const sizeStyles = activeStyle
-      .toArray()
-      .filter(style => style && style.slice(0, 6) === "fsize_");
-    console.log(sizeStyles);
-    if (activeStyle.has(style) && sizeStyles[sizeStyles.length - 1] === style) {
-      className = "active-style";
-    }
-
-    return (
-      <button
-        key={style}
-        data-style={style}
-        onMouseDown={toggleInlineStyle}
-        className={`style-btn ${className}`}
-      >
-        {value}
-      </button>
-    );
-  };
 
   // headers
   const [showHeaders, setShowHeaders] = useState(false);
@@ -308,8 +283,9 @@ const Toolbar = ({
       <button
         /* disabled={!hasSelection} */
         className=" current-font style-btn"
-        onMouseOver={() => setShowFonts(true)}
-        onMouseDown={() => setShowFonts(!showFonts)}
+        onMouseDown={() => {
+          setShowFonts(!showFonts);
+        }}
         style={{
           fontFamily: currFont
             ? currFont.replace("font_", "").replace(/_/g, " ")
@@ -369,16 +345,16 @@ const Toolbar = ({
               </div>
             )}
           </div>
-          <div className="font-sizes">
+          {/* <div className="font-sizes">
             <button
               className="style-btn"
-              onClick={() => setShowFontSizes(!showFontSizes)}
+              onMouseDown={() => setShowFontSizes(!showFontSizes)}
             >
               Font Size
             </button>
             {showFontSizes &&
               fontSizes.map(btn => createFsizeBtn(btn.value, btn.style))}
-          </div>
+          </div> */}
           <div className="font-color">
             {showColors && (
               <div className="color-picker">
@@ -465,11 +441,12 @@ Toolbar.propTypes = {
   setNotePrompt: PropTypes.func.isRequired,
   styles: PropTypes.object.isRequired,
   hasSelection: PropTypes.bool.isRequired,
-  onAlignClick: PropTypes.func.isRequired
+  onAlignClick: PropTypes.func.isRequired,
+  setInlineStyles: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   editor: state.editor
 });
 
-export default connect(mapStateToProps, { setStyle })(Toolbar);
+export default connect(mapStateToProps, { setStyle, setInlineStyles })(Toolbar);

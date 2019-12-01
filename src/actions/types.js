@@ -1,1 +1,3 @@
 export const SET_STYLE = "SET_STYLE";
+export const SET_INLINE_STYLES = "SET_INLINE_STYLES";
+export const SET_EDITOR_STATE = "SET_EDITOR_STATE";

@@ -277,26 +277,6 @@ export var styleMap = {
   },
   font_Crimson_Text: {
     fontFamily: "Crimson Text, serif"
-  },
-  // font sizes
-  fsize_NORMAL: {
-    fontSize: "16px"
-  },
-
-  fsize_EXTRA_SMALL: {
-    fontSize: "xx-small"
-  },
-
-  fsize_SMALL: {
-    fontSize: "small"
-  },
-
-  fsize_LARGE: {
-    fontSize: "32px"
-  },
-
-  fsize_EXTRA_LARGE: {
-    fontSize: "48px"
   }
 };
 

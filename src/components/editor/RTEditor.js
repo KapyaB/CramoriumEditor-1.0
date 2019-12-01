@@ -20,11 +20,16 @@ import ImageEmbed from "./embeds/ImageEmbed";
 import LinkEmbed from "./embeds/LinkEmbed";
 import NoteEmbed from "./embeds/NoteEmbed";
 import notePlugin from "./plugins/NotePlugin";
+import { setInlineStyles, setEditorState } from "../../actions/editor";
 
 // editor ref
 const editorRef = createRef();
 
-const RichTEditor = ({ editor: { currStyle } }) => {
+const RichTEditor = ({
+  editor: { currStyle, inlineStyles, editorState },
+  setInlineStyles,
+  setEditorState
+}) => {
   const [ref, setRef] = useState(editorRef);
 
   const focus = () => {
@@ -70,7 +75,8 @@ const RichTEditor = ({ editor: { currStyle } }) => {
   };
 
   // the EditorState state. Creates an empty editor initially
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  // useState(EditorState.createEmpty());
+  useEffect(() => setEditorState(EditorState.createEmpty()), []);
 
   // inline styles. use a single method by setting a 'data-style attribute on th ebuttons
   const toggleInlineStyle = e => {
@@ -119,6 +125,7 @@ const RichTEditor = ({ editor: { currStyle } }) => {
       );
 
       nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
+      // setInlineStyles(nextEditorState.getCurrentInlineStyle());
 
       return setEditorState(nextEditorState);
     }
@@ -130,6 +137,7 @@ const RichTEditor = ({ editor: { currStyle } }) => {
 
     // toggle the style. returns a new editor state
     setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+    setInlineStyles(editorState.getCurrentInlineStyle());
     setRef(editorRef);
   };
 
@@ -211,13 +219,13 @@ const RichTEditor = ({ editor: { currStyle } }) => {
 
   const plugins = [linkPlugin, notePlugin];
 
-  // whether there is a selection or not
-  let hasSelection = false;
-  const cursorPosition = editorState.getSelection().getAnchorOffset(); // or start of selection
-  const endOfSelction = editorState.getSelection().getFocusOffset();
-  if (cursorPosition !== endOfSelction) {
-    hasSelection = true;
-  }
+  // // whether there is a selection or not
+  // let hasSelection = false;
+  // const cursorPosition = editorState.getSelection().getAnchorOffset(); // or start of selection
+  // const endOfSelction = editorState.getSelection().getFocusOffset();
+  // if (cursorPosition !== endOfSelction) {
+  //   hasSelection = true;
+  // }
 
   // text alignment
   // All Blocks in editor
@@ -367,7 +375,7 @@ const RichTEditor = ({ editor: { currStyle } }) => {
         notePrompt={notePrompt}
         setNotePrompt={setNotePrompt}
         styles={styles}
-        hasSelection={hasSelection}
+        /* hasSelection={hasSelection} */
         onAlignClick={onAlignClick}
         setRef={setRef}
         editorRef={editorRef}
@@ -417,10 +425,16 @@ const RichTEditor = ({ editor: { currStyle } }) => {
   );
 };
 
-RichTEditor.propTypes = { editor: PropTypes.object.isRequired };
+RichTEditor.propTypes = {
+  editor: PropTypes.object.isRequired,
+  setInlineStyles: PropTypes.func.isRequired,
+  setEditorState: PropTypes.func.isRequired
+};
 
 const mapStateToProps = state => ({
   editor: state.editor
 });
 
-export default connect(mapStateToProps, {})(RichTEditor);
+export default connect(mapStateToProps, { setInlineStyles, setEditorState })(
+  RichTEditor
+);
